@@ -4,10 +4,11 @@ A starter repo for the AllthingsPM AI product management course. You fork it onc
 in it, stage by stage. The lessons do the teaching; this kit gives you working code, synthetic data and
 tests so you can spend your time on product decisions, not setup.
 
-## 1. Fork it
+## 1. When to fork
 
-1. Click **Fork** on GitHub. Your copy lives at `https://github.com/<you>/atp-builder-kit`.
-2. In each notebook's first cell, change `GITHUB_OWNER` in `REPO_URL` to your GitHub name.
+Chapters 1 and 2 need no GitHub account: open the notebooks straight from the links in section 3, run them in Colab, and save your copy to your Google Drive (File, then Save a copy in Drive).
+
+In Chapter 3 you fork the kit: click **Fork** on GitHub, and your copy lives at `https://github.com/<you>/atp-builder-kit`. Move your Chapter 1 and 2 notebooks into its `stage-01/` and `stage-02/` folders. From then on, change `arpitRanjan` to your GitHub name in `REPO_URL` in each notebook's first cell, so Colab opens your copy.
 
 ## 2. One folder per stage
 
@@ -22,14 +23,14 @@ Skipped a stage? Each `checkpoint/stage-NN` branch has an example finished stage
 
 ## 3. Open the notebooks in Colab
 
-Replace `GITHUB_OWNER` with your GitHub name in these links:
+These links open the kit's own copy. After you fork, replace `arpitRanjan` with your GitHub name to open yours:
 
 - [01_first_calls](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/01_first_calls.ipynb)
 - [01_probe_set](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/01_probe_set.ipynb)
 - [02_sql_duckdb](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/02_sql_duckdb.ipynb)
 - [02_traces_pandas](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/02_traces_pandas.ipynb)
 
-The first cell clones your fork into Colab so the notebook can find `kit/` and `data/`.
+The first cell clones the repo into Colab so the notebook can find `kit/` and `data/`.
 
 Locally (Python 3.11):
 
