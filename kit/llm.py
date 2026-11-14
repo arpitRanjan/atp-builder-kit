@@ -14,7 +14,7 @@ import sys
 import time
 from pathlib import Path
 
-DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
+DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite"
 MAX_TRIES = 4
 ROOT = Path(__file__).resolve().parent.parent
 

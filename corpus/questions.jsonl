@@ -1,0 +1,25 @@
+{"qid": "q01", "question": "How do I create a new note and rename it later?", "page_ids": ["qn-01"]}
+{"qid": "q02", "question": "Can I format and edit an existing note after I save it?", "page_ids": ["qn-01"]}
+{"qid": "q03", "question": "How do I export one of my notes as a PDF file?", "page_ids": ["qn-02"]}
+{"qid": "q04", "question": "Is there a way to save a note as PDF for printing?", "page_ids": ["qn-02"]}
+{"qid": "q05", "question": "How do tags work, and can I organize notes into folders too?", "page_ids": ["qn-03"]}
+{"qid": "q06", "question": "What's the best way to group my notes by folder and tag?", "page_ids": ["qn-03"]}
+{"qid": "q07", "question": "How can I search for a note by keyword?", "page_ids": ["qn-04"]}
+{"qid": "q08", "question": "Why aren't my latest notes showing up on my other device, and how do I fix sync?", "page_ids": ["qn-05"]}
+{"qid": "q09", "question": "How do I switch the app to dark mode?", "page_ids": ["qn-06"]}
+{"qid": "q10", "question": "Can I change the theme colors in the app?", "page_ids": ["qn-06"]}
+{"qid": "q11", "question": "I deleted a note by accident\u2014can I get it back?", "page_ids": ["qn-07"]}
+{"qid": "q12", "question": "Will the app still work if I have no internet connection?", "page_ids": ["qn-08"]}
+{"qid": "q13", "question": "How do I use the app offline and what happens when I reconnect?", "page_ids": ["qn-08", "qn-05"]}
+{"qid": "q14", "question": "Where can I see the different plans and subscription prices?", "page_ids": ["qn-09"]}
+{"qid": "q15", "question": "How do I share a notebook with my team members?", "page_ids": ["qn-10"]}
+{"qid": "q16", "question": "Can I invite coworkers to a shared notebook and control what they can access?", "page_ids": ["qn-10", "qn-11"]}
+{"qid": "q17", "question": "What roles are available for team members, and what can each role do?", "page_ids": ["qn-11"]}
+{"qid": "q18", "question": "How do shared templates work for a team workspace?", "page_ids": ["qn-12"]}
+{"qid": "q19", "question": "Can our team create templates that everyone in the workspace can use?", "page_ids": ["qn-12"]}
+{"qid": "q20", "question": "How can I organize notes with tags and then find them quickly with search?", "page_ids": ["qn-03", "qn-04"]}
+{"qid": "q21", "question": "If I accidentally delete a note while offline, can I recover it later?", "page_ids": ["qn-07", "qn-08"]}
+{"qid": "q22", "question": "How do I request a refund for being charged twice?", "page_ids": ["qn-13"]}
+{"qid": "q23", "question": "A customer asked us to erase all of their data\u2014how do I do that?", "page_ids": ["qn-14"]}
+{"qid": "q24", "question": "Where can I view the audit log to see recent admin activity?", "page_ids": ["qn-15"]}
+{"qid": "q25", "question": "Can I check the audit log to confirm when a user's data was deleted?", "page_ids": ["qn-15", "qn-14"]}

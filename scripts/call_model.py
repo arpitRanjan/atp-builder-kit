@@ -8,7 +8,7 @@ from pathlib import Path
 import requests
 
 # Settings you can change.
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-3.5-flash-lite"
 URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "runs.csv"

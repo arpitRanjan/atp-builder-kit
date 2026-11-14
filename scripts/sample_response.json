@@ -18,6 +18,6 @@
     "candidatesTokenCount": 27,
     "totalTokenCount": 51
   },
-  "modelVersion": "gemini-2.5-flash",
+  "modelVersion": "gemini-3.5-flash-lite",
   "note": "Example response saved for offline mode. Shape follows the Gemini generateContent REST API."
 }
