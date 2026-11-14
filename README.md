@@ -24,10 +24,10 @@ Skipped a stage? Each `checkpoint/stage-NN` branch has an example finished stage
 
 Replace `GITHUB_OWNER` with your GitHub name in these links:
 
-- [01_first_calls](https://colab.research.google.com/github/GITHUB_OWNER/atp-builder-kit/blob/main/notebooks/01_first_calls.ipynb)
-- [01_probe_set](https://colab.research.google.com/github/GITHUB_OWNER/atp-builder-kit/blob/main/notebooks/01_probe_set.ipynb)
-- [02_sql_duckdb](https://colab.research.google.com/github/GITHUB_OWNER/atp-builder-kit/blob/main/notebooks/02_sql_duckdb.ipynb)
-- [02_traces_pandas](https://colab.research.google.com/github/GITHUB_OWNER/atp-builder-kit/blob/main/notebooks/02_traces_pandas.ipynb)
+- [01_first_calls](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/01_first_calls.ipynb)
+- [01_probe_set](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/01_probe_set.ipynb)
+- [02_sql_duckdb](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/02_sql_duckdb.ipynb)
+- [02_traces_pandas](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/02_traces_pandas.ipynb)
 
 The first cell clones your fork into Colab so the notebook can find `kit/` and `data/`.
 
