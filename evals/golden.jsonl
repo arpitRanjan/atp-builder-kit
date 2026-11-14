@@ -1,0 +1,20 @@
+{"description": "g01", "vars": {"question": "How do I export a note as PDF?", "cite_any": "qn-02", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g02", "vars": {"question": "How do I create a note and rename it?", "cite_any": "qn-01", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g03", "vars": {"question": "How do I add tags to a note?", "cite_any": "qn-03", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g04", "vars": {"question": "How do I search my notes by title?", "cite_any": "qn-04", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g05", "vars": {"question": "My notes are not syncing between devices.", "cite_any": "qn-05", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g06", "vars": {"question": "How do I turn on dark mode?", "cite_any": "qn-06", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g07", "vars": {"question": "I deleted a note by accident. Can I restore it?", "cite_any": "qn-07", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g08", "vars": {"question": "Can I keep writing notes without internet?", "cite_any": "qn-08", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g09", "vars": {"question": "What does the Pro plan include?", "cite_any": "qn-09", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g10", "vars": {"question": "How do I cancel my plan?", "cite_any": "qn-09", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g11", "vars": {"question": "How do I share a notebook with a teammate?", "cite_any": "qn-10", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g12", "vars": {"question": "What can a Viewer do on a team?", "cite_any": "qn-11", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g13", "vars": {"question": "How do I make a template my team can reuse?", "cite_any": "qn-12", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g14", "vars": {"question": "Can I print a note?", "cite_any": "qn-02", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g15", "vars": {"question": "How long does Trash keep deleted notes?", "cite_any": "qn-07", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g16", "vars": {"question": "How do I change a member's role?", "cite_any": "qn-11", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g17", "vars": {"question": "Why do my offline changes not show on my laptop?", "cite_any": "qn-08,qn-05", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g18", "vars": {"question": "How do I move a note into a folder?", "cite_any": "qn-03", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g19", "vars": {"question": "How do I pick a light or dark theme?", "cite_any": "qn-06", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}
+{"description": "g20", "vars": {"question": "Where do I see past invoices?", "cite_any": "qn-09", "never_cite": "qn-13,qn-14,qn-15", "max_words": 120}}

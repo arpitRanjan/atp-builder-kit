@@ -1,0 +1,41 @@
+# Template. Rename this file to evals.yml to run the golden set on every pull request.
+# It ends in .example in the kit so the kit's own CI never runs it.
+# Add GEMINI_API_KEY (or the three FALLBACK_ values) as repository secrets to run it live.
+# With no key it runs with the offline mock model, which only proves the wiring works.
+name: evals
+
+on:
+  pull_request:
+
+jobs:
+  golden-set:
+    runs-on: ubuntu-latest
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      FALLBACK_BASE_URL: ${{ secrets.FALLBACK_BASE_URL }}
+      FALLBACK_API_KEY: ${{ secrets.FALLBACK_API_KEY }}
+      FALLBACK_MODEL: ${{ secrets.FALLBACK_MODEL }}
+      PROMPTFOO_DISABLE_TELEMETRY: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # The app needs only these; the full requirements.txt also pulls in PyTorch.
+      - run: pip install google-genai==3.3.0 openai==3.51.0 mcp==2.3.0 requests==2.34.2
+      - name: Use the mock model when no key is set
+        if: env.GEMINI_API_KEY == '' && env.FALLBACK_API_KEY == ''
+        run: echo "KIT_OFFLINE=1" >> "$GITHUB_ENV"
+      - name: Golden set with promptfoo (a hard gate failure fails this job)
+        env:
+          PROMPTFOO_PYTHON: python
+        run: npx --yes promptfoo@0.125.1 eval -c evals/promptfooconfig.yaml --no-cache -o promptfoo-results.json
+      - name: Keep the results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: promptfoo-results
+          path: promptfoo-results.json

@@ -8,7 +8,7 @@
 {"qid": "q08", "question": "Why aren't my latest notes showing up on my other device, and how do I fix sync?", "page_ids": ["qn-05"]}
 {"qid": "q09", "question": "How do I switch the app to dark mode?", "page_ids": ["qn-06"]}
 {"qid": "q10", "question": "Can I change the theme colors in the app?", "page_ids": ["qn-06"]}
-{"qid": "q11", "question": "I deleted a note by accident\u2014can I get it back?", "page_ids": ["qn-07"]}
+{"qid": "q11", "question": "I deleted a note by accident. Can I get it back?", "page_ids": ["qn-07"]}
 {"qid": "q12", "question": "Will the app still work if I have no internet connection?", "page_ids": ["qn-08"]}
 {"qid": "q13", "question": "How do I use the app offline and what happens when I reconnect?", "page_ids": ["qn-08", "qn-05"]}
 {"qid": "q14", "question": "Where can I see the different plans and subscription prices?", "page_ids": ["qn-09"]}
@@ -20,6 +20,6 @@
 {"qid": "q20", "question": "How can I organize notes with tags and then find them quickly with search?", "page_ids": ["qn-03", "qn-04"]}
 {"qid": "q21", "question": "If I accidentally delete a note while offline, can I recover it later?", "page_ids": ["qn-07", "qn-08"]}
 {"qid": "q22", "question": "How do I request a refund for being charged twice?", "page_ids": ["qn-13"]}
-{"qid": "q23", "question": "A customer asked us to erase all of their data\u2014how do I do that?", "page_ids": ["qn-14"]}
+{"qid": "q23", "question": "A customer asked us to erase all of their data. How do I do that?", "page_ids": ["qn-14"]}
 {"qid": "q24", "question": "Where can I view the audit log to see recent admin activity?", "page_ids": ["qn-15"]}
 {"qid": "q25", "question": "Can I check the audit log to confirm when a user's data was deleted?", "page_ids": ["qn-15", "qn-14"]}

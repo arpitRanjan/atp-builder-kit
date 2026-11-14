@@ -14,6 +14,11 @@ import sys
 import time
 from pathlib import Path
 
+try:
+    from kit.mock_brain import respond as mock_brain_respond
+except ImportError:  # llm.py imported on its own, not as part of the kit package
+    from mock_brain import respond as mock_brain_respond
+
 DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite"
 MAX_TRIES = 4
 ROOT = Path(__file__).resolve().parent.parent
@@ -95,7 +100,10 @@ def _mock(prompt, system, model, temperature, max_output_tokens):
     _mock_calls["n"] += 1
     seed = int(hashlib.md5(f"{model}|{prompt}|{_mock_calls['n']}".encode()).hexdigest(), 16)
     flaky = "small" in model or "nano" in model or "b" == model[-1:]
-    if "JSON" in prompt or "json" in prompt:
+    brain = mock_brain_respond(prompt, system)  # rule based answers for the Chapter 4 to 9 notebooks
+    if brain is not None:
+        text = brain
+    elif "JSON" in prompt or "json" in prompt:
         good = not (flaky and seed % 3 == 0)
         text = json.dumps({"answer": "mock", "ok": True}) if good else '{"answer": mock'
     else:

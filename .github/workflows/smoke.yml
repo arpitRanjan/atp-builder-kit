@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      # The CPU build of torch first: the default Linux build pulls in about 3 GB of GPU libraries.
+      - run: pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
       - run: pip install -r requirements.txt
       - run: pytest -q
         env:
@@ -35,6 +37,8 @@ jobs:
         if: steps.key.outputs.present == 'true'
         with:
           python-version: "3.11"
+      - if: steps.key.outputs.present == 'true'
+        run: pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
       - if: steps.key.outputs.present == 'true'
         run: pip install -r requirements.txt
       - name: Run notebook 01 live

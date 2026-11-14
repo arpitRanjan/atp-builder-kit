@@ -17,8 +17,14 @@ In Chapter 3 you fork the kit: click **Fork** on GitHub, and your copy lives at 
 | `stage-01/` | your runs of the two `01` notebooks, plus `predictions.md` |
 | `stage-02/` | your runs of the two `02` notebooks, plus `failure_backlog.csv` |
 | `stage-03/` | `CODEMAP.md`, `prompts/`, your MCP tool, `DEPLOYED.md` |
+| `stage-04/` | your run of `04_baseline_vs_llm`, `baseline_vs_llm.csv`, `ASSUMPTION.md` |
+| `stage-05/` | your `acceptance.jsonl`, `SHIP_BAR.md`, the `scripts/acceptance.py` output |
+| `stage-06/` | your runs of the four `06` notebooks, `traces/run.jsonl`, `outbox.jsonl` |
+| `stage-07/` | `APPROVAL.md`, `LOG_FIELDS.md`, `feedback.jsonl` (no notebook: builds on `06_harness`) |
+| `stage-08/` | your run of `08_judge_calibration`, `labels.csv`, your golden set and `evals.yml` |
+| `stage-09/` | your runs of the three `09` notebooks, `RETRIEVAL.md` |
 
-Skipped a stage? Each `checkpoint/stage-NN` branch has an example finished stage you can continue from:
+Skipped a stage? Each `checkpoint/stage-NN` branch (01 to 09) has an example finished stage you can continue from:
 `git checkout checkpoint/stage-01`. Those examples were made with the offline mock model.
 
 ## 3. Open the notebooks in Colab
@@ -29,8 +35,20 @@ These links open the kit's own copy. After you fork, replace `arpitRanjan` with 
 - [01_probe_set](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/01_probe_set.ipynb)
 - [02_sql_duckdb](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/02_sql_duckdb.ipynb)
 - [02_traces_pandas](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/02_traces_pandas.ipynb)
+- [04_baseline_vs_llm](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/04_baseline_vs_llm.ipynb)
+- [06_agent_loop](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/06_agent_loop.ipynb)
+- [06_harness](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/06_harness.ipynb)
+- [06_context_ablation](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/06_context_ablation.ipynb)
+- [06_structured_output](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/06_structured_output.ipynb)
+- [08_judge_calibration](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/08_judge_calibration.ipynb)
+- [09_rag_pipeline](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/09_rag_pipeline.ipynb)
+- [09_retrieval_eval](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/09_retrieval_eval.ipynb)
+- [09_permissions](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/09_permissions.ipynb)
 
-The first cell clones the repo into Colab so the notebook can find `kit/` and `data/`.
+The first cell clones the repo into Colab so the notebook can find `kit/` and `data/`, and installs only
+what that notebook needs. Colab already has numpy, pydantic and sentence-transformers. The 09 notebooks
+download two small Hugging Face models the first time they run live (about 90 MB each, a minute or two):
+`all-MiniLM-L6-v2` for embeddings and `cross-encoder/ms-marco-MiniLM-L-6-v2` for reranking.
 
 Locally (Python 3.11):
 
@@ -39,6 +57,10 @@ python3.11 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+`requirements.txt` includes PyTorch (for sentence-transformers). On Linux without a GPU, run
+`pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu` first to skip about 3 GB.
+promptfoo (Chapter 8) is an npm tool, not a pip package: it needs Node 20 or later and runs with `npx`.
+
 ## 4. How keys work
 
 - **Colab:** click the key icon (Secrets) on the left, add `GEMINI_API_KEY`, turn on notebook access.
@@ -46,6 +68,9 @@ pip install -r requirements.txt
 - **No Gemini key?** Fill in `FALLBACK_BASE_URL`, `FALLBACK_API_KEY` and `FALLBACK_MODEL` for any
   OpenAI style API (OpenAI, Groq, OpenRouter).
 - **No key at all?** Set `KIT_OFFLINE=1`. Every call goes to a fake model with repeatable answers.
+  For the Chapter 4 to 9 notebooks the fake model follows simple keyword rules (`kit/mock_brain.py`),
+  and the embedder and reranker are deterministic stand-ins, so nothing is downloaded. Offline numbers
+  only show the notebook works: run it live for numbers you can use.
 
 `kit/llm.py` picks the provider in this order: `KIT_OFFLINE=1` (mock), `KIT_PROVIDER` if set,
 Gemini if `GEMINI_API_KEY` exists, else the fallback. Edit prices in `kit/prices.py`.
@@ -69,13 +94,38 @@ kit/llm.py            call_llm(): one function for Gemini, OpenAI style APIs and
 kit/prices.py         prices per million tokens, and cost()
 data/make_data.py     makes the synthetic data (fixed seed); the CSV and JSONL files are committed
 data/probes.csv       10 probe tasks with code-checkable pass criteria
-notebooks/            the four stage 1 and stage 2 notebooks
+notebooks/            one or more notebooks per chapter (see section 3)
 scripts/call_model.py the same call with plain HTTP, to read raw JSON and tracebacks
 corpus/make_corpus.py writes the Quillnote help pages (Quillnote is an invented app)
 mcp_server/server.py  an MCP server with one read-only tool, search_docs
 app/app.py            a small Streamlit help assistant
+kit/rag.py            parse, chunk, embed, index, BM25, fusion and rerank, for the 09 notebooks
+kit/mock_brain.py     the offline mock's keyword rules for the Chapter 4 to 9 notebooks
+scripts/acceptance.py acceptance cases (evals/acceptance.jsonl) against a ship bar: --bar 0.8 [--url URL]
+evals/                labels.csv (judge calibration), golden.jsonl, gates.py, promptfooconfig.yaml, run_evals.py
+.github/workflows/evals.yml.example  rename to evals.yml to run the golden set on every pull request
 tests/                pytest, all offline
 ```
+
+### The agent tool protocol (06 notebooks)
+
+The agent notebooks do not use a provider's native tool calling, because Gemini and OpenAI style APIs
+format it differently. The system prompt asks the model to reply with ONE JSON object:
+`{"tool": "search_docs", "args": {"query": "..."}}` to call a tool, or `{"final": "..."}` to finish.
+The loop parses the outermost `{...}` from the reply, runs the tool in code, and adds `CALL n:` and
+`RESULT n:` lines to the next prompt. The same loop runs on Gemini, any OpenAI style API and the mock.
+`draft_issue` only appends to a local `outbox.jsonl` file; nothing is sent anywhere.
+
+### Evals in CI (Chapter 8)
+
+```
+python evals/run_evals.py                               # no npm: exit 1 if a hard gate fails
+npx promptfoo@0.125.1 eval -c evals/promptfooconfig.yaml # the same gates in promptfoo
+```
+
+Hard gates (must cite a right page, never cite an admin page, no empty or unsure answer) fail the run.
+Advisory gates (length, number of pages cited) are reported and never fail it. To run it on every pull
+request, rename `.github/workflows/evals.yml.example` to `evals.yml` and add your key as a repository secret.
 
 ## 8. Tests
 
@@ -91,6 +141,12 @@ GitHub Actions runs this on every push, on pull requests and weekly (`.github/wo
 - All tests pass offline with the mock model.
 - Live: notebook `01_first_calls` and the app logic through the `openai_compatible` provider with
   OpenAI `gpt-5.4-mini`.
+- Live (2026-11-14): `06_agent_loop` and `09_rag_pipeline` through `openai_compatible` with `gpt-5.4-mini`,
+  and `09_rag_pipeline` with the real local `all-MiniLM-L6-v2` embedder. The other new notebooks
+  (04, 06 harness, context ablation and structured output, 08, 09 retrieval eval and permissions)
+  were tested offline only.
+- promptfoo 0.125.1 ran `evals/promptfooconfig.yaml` offline with Node 23 (same 17 of 20 hard gate
+  passes as `evals/run_evals.py`). The `evals.yml.example` workflow has not run on GitHub yet.
 - **Not tested live: Gemini.** The Gemini code in `kit/llm.py` and `scripts/call_model.py` follows the
   google-genai SDK and the generateContent REST API, but it has not been run against a real Gemini key.
   `scripts/call_model.py` was tested offline only.

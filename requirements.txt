@@ -10,3 +10,14 @@ pytest==9.2.0
 nbclient==0.11.0
 nbformat==5.11.1
 ipykernel==7.4.0
+numpy==2.4.6
+pydantic==2.14.3
+rank_bm25==0.2.2
+sentence-transformers==6.3.0
+# sentence-transformers pulls these in; pinned to the tested versions. On Linux without a GPU,
+# install the small CPU build of torch first:
+#   pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
+torch==2.15.0
+transformers==5.23.0
+# promptfoo is an npm tool, not a pip package. Run it with Node 20 or later:
+#   npx promptfoo@0.125.1 eval -c evals/promptfooconfig.yaml
