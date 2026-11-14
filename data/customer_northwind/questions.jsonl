@@ -1,0 +1,12 @@
+{"qid": "n01", "role": "student", "question": "How do I book a tutoring session with a maths tutor?", "page_ids": ["nw-01"]}
+{"qid": "n02", "role": "student", "question": "Can I cancel my session tomorrow without being charged?", "page_ids": ["nw-02"]}
+{"qid": "n03", "role": "student", "question": "The video lesson will not load. How do I join?", "page_ids": ["nw-03"]}
+{"qid": "n04", "role": "student", "question": "How do I upload my homework as a PDF?", "page_ids": ["nw-04"]}
+{"qid": "n05", "role": "student", "question": "When will my tutor send feedback on my homework?", "page_ids": ["nw-04"]}
+{"qid": "n06", "role": "student", "question": "My tutor cancelled. Do I get a refund?", "page_ids": ["nw-02"]}
+{"qid": "n07", "role": "student", "question": "Can my parent see the session notes from my tutor?", "page_ids": ["nw-07"]}
+{"qid": "n08", "role": "tutor", "question": "How do I set my availability and add time away?", "page_ids": ["nw-05"]}
+{"qid": "n09", "role": "tutor", "question": "When is tutor pay sent and how do I check my timesheet?", "page_ids": ["nw-06"]}
+{"qid": "n10", "role": "tutor", "question": "How do I write a progress report for a student?", "page_ids": ["nw-07"]}
+{"qid": "n11", "role": "admin", "question": "How do I refund a session the tutor cancelled?", "page_ids": ["nw-08"]}
+{"qid": "n12", "role": "admin", "question": "How do I remove a tutor who is leaving?", "page_ids": ["nw-09"]}

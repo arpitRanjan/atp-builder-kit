@@ -34,3 +34,29 @@ def test_harness_writes_one_log_line_per_step(tmp_path):
     run_notebook(ROOT / "notebooks" / "06_harness.ipynb", tmp_path)
     lines = (tmp_path / "traces" / "run.jsonl").read_text().splitlines()
     assert lines and all({"input", "decision", "output", "latency_s"} <= set(json.loads(x)) for x in lines)
+
+
+def test_tracing_notebook_writes_every_span_kind(tmp_path):
+    run_notebook(ROOT / "notebooks" / "10_tracing.ipynb", tmp_path)
+    spans = [json.loads(x) for x in (tmp_path / "traces" / "spans.jsonl").read_text().splitlines()]
+    assert {s["name"] for s in spans} == {"request", "retrieval", "model_call", "tool_call"}
+    assert sum(s["name"] == "request" for s in spans) == 20
+    assert all({"latency_ms", "input_tokens", "output_tokens", "cost_usd"} <= set(s) for s in spans)
+
+
+def test_customer_notebook_fills_the_field_log(tmp_path):
+    run_notebook(ROOT / "notebooks" / "11_customer_deployment.ipynb", tmp_path)
+    import csv
+    rows = list(csv.DictReader(open(tmp_path / "field_log.csv")))
+    assert rows and list(rows[0]) == ["date", "issue", "workaround", "decision", "note"]
+    assert {r["decision"] for r in rows} <= {"configure", "build", "drop"}
+
+
+def test_injection_notebook_logs_a_blocked_call_and_keeps_corpus_clean(tmp_path):
+    before = (ROOT / "corpus" / "qn-02.md").read_text()
+    regression = (ROOT / "evals" / "regression.jsonl").read_text()
+    run_notebook(ROOT / "notebooks" / "13_injection_and_redteam.ipynb", tmp_path)
+    blocked = [json.loads(x) for x in (tmp_path / "blocked_calls.jsonl").read_text().splitlines()]
+    assert blocked and blocked[0]["host"] == "evil.example"
+    assert (ROOT / "corpus" / "qn-02.md").read_text() == before
+    assert (ROOT / "evals" / "regression.jsonl").read_text() == regression  # adding the same attacks is a no-op

@@ -12,3 +12,6 @@ __pycache__/
 # Files the scripts write while you practise
 runs.csv
 scripts/runs.csv
+
+# Span files that make traces writes
+/traces/

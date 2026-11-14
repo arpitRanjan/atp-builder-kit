@@ -7,21 +7,31 @@ products). The OpenAI numbers are examples. Prices change: check before you trus
 
 PRICES = {
     # model name: {"input": $ per 1M input tokens, "output": $ per 1M output tokens}
+    # "cached_input" (optional): $ per 1M input tokens read from the provider's prompt cache.
+    # Without it, cached tokens are charged at the full input price.
     "gemini-3.5-flash-lite": {"input": 0.30, "output": 2.50},
     # 3.6 Flash: $0.75 / $3.75 through 2026-12-31, then $1.50 / $7.50 from 2027-01-01.
     "gemini-3.6-flash": {"input": 0.75, "output": 3.75},
-    "gpt-5.4-mini": {"input": 0.75, "output": 4.50},
-    "gpt-5.4-nano": {"input": 0.20, "output": 1.25},
-    "mock-model": {"input": 1.00, "output": 4.00},
-    "mock-model-a": {"input": 1.00, "output": 4.00},
-    "mock-model-b": {"input": 0.25, "output": 1.00},
+    # Example cached prices: one tenth of the input price. Check the provider's page.
+    "gpt-5.4-mini": {"input": 0.75, "output": 4.50, "cached_input": 0.075},
+    "gpt-5.4-nano": {"input": 0.20, "output": 1.25, "cached_input": 0.02},
+    "mock-model": {"input": 1.00, "output": 4.00, "cached_input": 0.10},
+    "mock-model-a": {"input": 1.00, "output": 4.00, "cached_input": 0.10},
+    "mock-model-b": {"input": 0.25, "output": 1.00, "cached_input": 0.025},
 }
 
 
-def cost(input_tokens, output_tokens, model):
-    """Dollar cost of one call. Returns 0.0 and prints a note if the model has no price yet."""
+def cost(input_tokens, output_tokens, model, cached_tokens=0):
+    """Dollar cost of one call. Returns 0.0 and prints a note if the model has no price yet.
+
+    cached_tokens is the part of input_tokens read from the prompt cache (providers count them
+    inside the input tokens). They are charged at "cached_input" when the model has that price.
+    """
     price = PRICES.get(model)
     if price is None:
         print(f"No price for '{model}'. Add it to kit/prices.py. Counting it as $0.")
         return 0.0
-    return (input_tokens * price["input"] + output_tokens * price["output"]) / 1_000_000
+    cached = min(cached_tokens or 0, input_tokens)
+    fresh = input_tokens - cached
+    return (fresh * price["input"] + cached * price.get("cached_input", price["input"])
+            + output_tokens * price["output"]) / 1_000_000

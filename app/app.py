@@ -27,12 +27,15 @@ def build_prompt(question, hits):
     return f"Help pages:\n{pages}\n\nUser question: {question}"
 
 
-def answer(question, folder=None):
-    """Search, then ask the model. Returns the answer text, cited ids and the call record."""
+def answer(question, folder=None, model=None, provider=None):
+    """Search, then ask the model. Returns the answer text, cited ids and the call record.
+
+    model and provider are optional: leave them out to use the kit's default (see kit/llm.py).
+    """
     hits = search(question, TOP_K, folder)
     if not hits:
         return {"text": "No help page matches that question.", "cited": [], "hits": [], "call": None}
-    call = call_llm(build_prompt(question, hits), system=SYSTEM, max_output_tokens=400)
+    call = call_llm(build_prompt(question, hits), system=SYSTEM, max_output_tokens=400, model=model, provider=provider)
     found = set(re.findall(r"qn-\d+", call["text"]))
     cited = [h["id"] for h in hits if h["id"] in found] or [h["id"] for h in hits]
     return {"text": call["text"], "cited": cited, "hits": hits, "call": call}

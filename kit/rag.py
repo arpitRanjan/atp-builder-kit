@@ -38,8 +38,13 @@ def parse_corpus(folder=None):
     return pages
 
 
-def chunk_pages(pages, size=120, overlap=30):
-    """Split each page into chunks of `size` words that share `overlap` words with the previous chunk."""
+def chunk_pages(pages, size=120, overlap=30, access=None):
+    """Split each page into chunks of `size` words that share `overlap` words with the previous chunk.
+
+    access maps a page visibility to the roles that may read it (default ACCESS). Another customer
+    with other roles passes its own map, like data/customer_northwind does.
+    """
+    access = access or ACCESS
     chunks = []
     step = max(1, size - overlap)
     for page in pages:
@@ -47,7 +52,7 @@ def chunk_pages(pages, size=120, overlap=30):
         for n, start in enumerate(range(0, max(len(ws) - overlap, 1), step)):
             text = " ".join(ws[start:start + size])
             chunks.append({"id": f"{page['id']}#{n}", "page_id": page["id"], "title": page["title"],
-                           "text": text, "access": ACCESS[page["visibility"]]})
+                           "text": text, "access": access[page["visibility"]]})
     return chunks
 
 

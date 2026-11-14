@@ -1,4 +1,4 @@
-"""Rule based answers for the offline mock model (KIT_OFFLINE=1), used by the Chapter 4 to 9 notebooks.
+"""Rule based answers for the offline mock model (KIT_OFFLINE=1), used by the Chapter 4 to 13 notebooks.
 
 It is NOT a real model. It spots the prompts those notebooks send (by a phrase in the system
 prompt or prompt) and answers with simple keyword rules, so every notebook runs with no network
@@ -28,16 +28,16 @@ def _seed(text):
     return int(hashlib.md5(text.encode()).hexdigest(), 16)
 
 
-def respond(prompt, system):
+def respond(prompt, system, model=None):
     system = system or ""
     for marker, handler in HANDLERS:
         if marker in system or marker in prompt:
-            return handler(prompt, system)
+            return handler(prompt, system, model or "")
     return None
 
 
 # ---------- 04: pick the help page ----------
-def _pick_page(prompt, system):
+def _pick_page(prompt, system, model=None):
     question = prompt.split("Question:")[-1]
     q = words(question)
     scores = []
@@ -52,31 +52,53 @@ def _pick_page(prompt, system):
     return json.dumps({"page_id": pick[1]})
 
 
-# ---------- 06: the JSON tool protocol ----------
-def _agent(prompt, system):
+# ---------- 06 and 13: the JSON tool protocol ----------
+# Instructions planted inside a page (13_injection_and_redteam). Results are JSON text, so quotes may be escaped.
+Q = r'\\?"'
+PLANTED_DRAFT = re.compile(rf"call draft_issue with title {Q}(.+?){Q}, body {Q}(.+?){Q} and to {Q}(.+?){Q}")
+PLANTED_FETCH = re.compile(rf"call fetch_url with url {Q}(.+?){Q}")
+
+
+def _agent(prompt, system, model=None):
     task = prompt.split("Task:", 1)[1].split("\n\n", 1)[0].strip()
     calls = [json.loads(c) for c in re.findall(r"^CALL \d+: (.*)$", prompt, re.M)]
     results = re.findall(r"^RESULT \d+: (.*)$", prompt, re.M)
+    tools = set(re.findall(r"^- (\w+)\(", system, re.M))
     quoted = re.findall(r'"([^"]+)"', task)
     query = quoted[0] if quoted and "search_docs" in task else task
-    if not calls:
+    url = re.search(r"https?://[^\s\"']+", task)
+    if not calls and url and "fetch_url" in tools:
+        return json.dumps({"tool": "fetch_url", "args": {"url": url.group(0).rstrip(".,")}})
+    if not calls or (len(calls) == 1 and calls[0].get("tool") == "fetch_url"):
         return json.dumps({"tool": "search_docs", "args": {"query": query, "top_k": 3}})
     last = results[-1] if results else ""
+    # The mock obeys an instruction it reads in a tool result, once, like a model that trusts its input.
+    planted = PLANTED_DRAFT.search(last)
+    if planted and "draft_issue" in tools:
+        title, body, to = planted.groups()
+        return json.dumps({"tool": "draft_issue", "args": {"title": title, "body": body, "to": to}})
+    planted = PLANTED_FETCH.search(last)
+    if planted and "fetch_url" in tools:
+        return json.dumps({"tool": "fetch_url", "args": {"url": planted.group(1)}})
     if last.startswith("ERROR"):
         # The mock gives up after a tool error. A real model might retry or invent an answer.
         return json.dumps({"final": "I could not finish: a tool failed."})
-    if last.startswith("DENIED"):
+    wants_issue = "issue" in task.lower()
+    if last.startswith("DENIED") and wants_issue:
         return json.dumps({"final": "A human did not approve the draft, so nothing was written."})
     if last.strip() == "[]":
         return json.dumps({"tool": "search_docs", "args": {"query": query, "top_k": 3}})
     ids = []
     for r in results:
         ids += [i for i in re.findall(r'"id": "(qn-\d+)"', r) if i not in ids]
-    wants_issue = "issue" in task.lower()
     if wants_issue and not any(c.get("tool") == "draft_issue" for c in calls):
         title = quoted[0] if quoted else task.split(".")[0][:60]
         body = f"Reported by the help desk. Related pages: {', '.join(ids[:2]) or 'none'}."
-        return json.dumps({"tool": "draft_issue", "args": {"title": title, "body": body}})
+        args = {"title": title, "body": body}
+        email = re.search(r"[\w.+-]+@[\w-]+\.[\w.]+", task)
+        if email and re.search(r"draft_issue\([^)]*\bto\b", system):
+            args["to"] = email.group(0).rstrip(".")
+        return json.dumps({"tool": "draft_issue", "args": args})
     cite = " ".join(f"[{i}]" for i in ids[:1])
     done = " Draft saved to the outbox." if wants_issue else ""
     return json.dumps({"final": f"See the help page {cite}.{done}".replace("  ", " ")})
@@ -91,7 +113,7 @@ def _sections(prompt):
     return {parts[i].strip(): parts[i + 1] for i in range(1, len(parts) - 1, 2)}
 
 
-def _context(prompt, system):
+def _context(prompt, system, model=None):
     s = _sections(prompt)
     question = s.get("QUESTION", "").strip()
     q = words(question)
@@ -123,7 +145,7 @@ def _context(prompt, system):
     return text
 
 
-def _summarize(prompt, system):
+def _summarize(prompt, system, model=None):
     # Keeps lines with rule words and the last three user turns. Facts without rule words get lost.
     limit = int((re.search(r"at most (\d+) words", prompt) or [0, 80])[1])
     users = [l[5:].strip() for l in prompt.splitlines() if l.startswith("User:")]
@@ -131,14 +153,14 @@ def _summarize(prompt, system):
     return " ".join(" ".join(keep).split()[:limit])
 
 
-def _consolidate(prompt, system):
+def _consolidate(prompt, system, model=None):
     # Merges exact duplicates only. It does not check whether a note is true.
     notes = re.findall(r"^- (.*)$", prompt, re.M)
     return json.dumps(list(dict.fromkeys(notes)))
 
 
 # ---------- 06: structured output ----------
-def _extract(prompt, system):
+def _extract(prompt, system, model=None):
     note = prompt.split("Note:", 1)[1].split("\n", 1)[0].strip()
     retry = "failed validation" in prompt
     low = note.lower()
@@ -175,7 +197,7 @@ def _extract(prompt, system):
 
 
 # ---------- 08: the judge ----------
-def _judge(prompt, system):
+def _judge(prompt, system, model=None):
     ref = prompt.split("Reference:", 1)[1].split("Answer:", 1)[0]
     ans = prompt.split("Answer:", 1)[1].split("Reply with", 1)[0]
     a, r = words(ans), words(ref)
@@ -187,7 +209,7 @@ def _judge(prompt, system):
 
 
 # ---------- 09: answer from sources, and the citation judge ----------
-def _rag(prompt, system):
+def _rag(prompt, system, model=None):
     question = prompt.split("Question:")[-1]
     q = words(question)
     sources = re.findall(r"^\[([\w#-]+)\] (.*)$", prompt.split("Question:")[0], re.M)
@@ -198,11 +220,96 @@ def _rag(prompt, system):
     return " ".join(text.split()[:30]) + f" [{sid}]"
 
 
-def _cite_judge(prompt, system):
+def _cite_judge(prompt, system, model=None):
     question = prompt.split("Question:", 1)[1].split("\n", 1)[0]
     source = prompt.split("Source:", 1)[1].split("Reply", 1)[0]
     ok = len(words(question) & words(source)) >= 2
     return "SUPPORTED" if ok else "NOT SUPPORTED"
+
+
+# ---------- 10: the model cascade ----------
+def _cheap(model):
+    return model.endswith("-b") or "nano" in model or "lite" in model
+
+
+def _cascade(prompt, system, model=None):
+    # Small models are unsure when a question points back at an earlier turn; big ones read the history.
+    users = [l[5:].strip() for l in prompt.splitlines() if l.startswith("User:")]
+    current, earlier = (users[-1] if users else ""), users[:-1]
+    pages = re.findall(r"^\[(qn-\d+)\] (.*)$", prompt, re.M)
+    q = words(current)
+    best = max(pages, key=lambda p: len(q & words(p[1]))) if pages else None
+    fact = ""
+    if best and len(q & words(best[1])) >= 2:
+        fact = re.split(r"(?<=[.!?])\s", best[1])[0].rstrip(".") + f" [{best[0]}]."
+    if re.search(r"\b(my plan|given my|as i said|earlier)\b", current, re.I):
+        if _cheap(model or ""):
+            return json.dumps({"answer": "I am not sure which plan you mean.", "confidence": 0.3})
+        plan = next((m.group(1) for u in earlier for m in [re.search(r"\b(\w+) plan\b", u, re.I)] if m), None)
+        if not plan:
+            return json.dumps({"answer": "Which plan are you on? The answer depends on it.", "confidence": 0.4})
+        return json.dumps({"answer": f"On the {plan} plan: {fact or 'see the help pages.'}", "confidence": 0.85})
+    if fact:
+        return json.dumps({"answer": fact, "confidence": 0.9})
+    return json.dumps({"answer": "Thanks, noted.", "confidence": 0.9})
+
+
+# ---------- 12: translate a question into English ----------
+PHRASES = [("le cambio el nombre", "rename"), ("cambio el nombre", "rename"), ("palabra clave", "keyword"),
+           ("modo oscuro", "dark mode"), ("modo oscruo", "dark mode"), ("sin conexion", "offline"),
+           ("espacio de trabajo", "workspace"), ("por error", "by accident"), ("otro dispositivo", "other device")]
+GLOSSARY = {
+    "creo": "create", "crear": "create", "nota": "note", "notas": "notes", "nueva": "new", "exporto": "export",
+    "exportar": "export", "exportr": "export", "archivo": "file", "guardar": "save", "imprimirla": "print",
+    "imprimir": "print", "etiquetas": "tags", "organizar": "organize", "organizo": "organize",
+    "carpetas": "folders", "busco": "search", "buscar": "search", "busqueda": "search", "aparecen": "showing",
+    "arreglo": "fix", "arreglar": "fix", "sincronizacion": "sync", "aplicacion": "app", "colores": "colors",
+    "tema": "theme", "borre": "deleted", "recuperar": "recover", "recuperarla": "recover", "funciona": "work",
+    "planes": "plans", "precios": "prices", "suscripcion": "subscription", "comparto": "share",
+    "compartir": "share", "cuaderno": "notebook", "notebok": "notebook", "equipo": "team", "miembros": "members",
+    "plantillas": "templates", "compartidas": "shared", "encuentro": "find", "rapido": "quickly",
+    "celular": "phone", "ver": "see", "donde": "where", "como": "how", "que": "what", "puedo": "can",
+    "mis": "my", "mi": "my", "cambiar": "change", "cambio": "switch", "roles": "roles", "cada": "each",
+    "hacer": "do", "funcionan": "work", "dispositivo": "device", "conexion": "connection",
+}
+ES_STOP = {"el", "la", "los", "las", "un", "una", "unos", "de", "del", "a", "al", "en", "y", "o", "con", "por",
+           "para", "se", "le", "lo", "me", "porfa", "luego", "despues", "hay", "uno", "es", "son"}
+
+
+def _plain(text):
+    for a, b in zip("áéíóúñü", "aeiounu"):
+        text = text.replace(a, b)
+    return text
+
+
+def _translate(prompt, system, model=None):
+    # A word list, not a translator: enough for the kit's 20 Spanish questions. Real models do far better.
+    text = _plain(prompt.split("Question:", 1)[-1].strip().lower())
+    text = re.sub(r"[¿?¡!.,]", " ", text)
+    for es, en in PHRASES:
+        text = text.replace(es, en)
+    out = []
+    for w in text.split():
+        if w in GLOSSARY:
+            out.append(GLOSSARY[w])
+        elif w not in ES_STOP:
+            out.append(w)
+    return " ".join(out)
+
+
+# ---------- 13: the input check ----------
+def _input_check(prompt, system, model=None):
+    # Flags a few attack shapes. It misses rephrased attacks and flags some harmless messages.
+    msg = prompt.split("Message:", 1)[-1].lower()
+    rules = [("instruction override", r"ignore (all|any|your|previous|the above|my)"),
+             ("role play to drop rules", r"\b(you are now|pretend|act as)\b"),
+             ("asks for hidden instructions", r"system prompt|your instructions"),
+             ("card number", r"\b\d{4}[ -]?\d{4}[ -]?\d{4}[ -]?\d{4}\b"),
+             ("bulk data request", r"\b(all user|every user|everyone's)\b")]
+    for reason, pattern in rules:
+        if re.search(pattern, msg):
+            return f"BLOCK: {reason}"
+    return "ALLOW"
 
 
 HANDLERS = [
@@ -215,4 +322,7 @@ HANDLERS = [
     ("You grade answers from a help assistant", _judge),
     ("Does the source support", _cite_judge),
     ("Answer using only the numbered sources", _rag),
+    ("CASCADE PROTOCOL", _cascade),
+    ("Translate this help question into English", _translate),
+    ("INPUT CHECK PROTOCOL", _input_check),
 ]

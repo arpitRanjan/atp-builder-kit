@@ -23,8 +23,14 @@ In Chapter 3 you fork the kit: click **Fork** on GitHub, and your copy lives at 
 | `stage-07/` | `APPROVAL.md`, `LOG_FIELDS.md`, `feedback.jsonl` (no notebook: builds on `06_harness`) |
 | `stage-08/` | your run of `08_judge_calibration`, `labels.csv`, your golden set and `evals.yml` |
 | `stage-09/` | your runs of the three `09` notebooks, `RETRIEVAL.md` |
+| `stage-10/` | your runs of the three `10` notebooks, `traces/spans.jsonl`, `ab_threshold.json`, `ab_readout.md` |
+| `stage-11/` | your run of `11_customer_deployment`, `field_log.csv`, `DEPLOYMENT.md` |
+| `stage-12/` | your run of `12_locale_eval`, `LOCALE.md` |
+| `stage-13/` | your runs of the two `13` notebooks, `blocked_calls.jsonl`, `redteam_runs.csv` |
+| `stage-14/` | `HANDOFF.md` (from `templates/`), the `make evals` and `make traces` output (no notebook) |
+| `stage-15/` | `TAKEHOME.md` (from `templates/`) and `SOLUTION.md` (no notebook) |
 
-Skipped a stage? Each `checkpoint/stage-NN` branch (01 to 09) has an example finished stage you can continue from:
+Skipped a stage? Each `checkpoint/stage-NN` branch (01 to 15) has an example finished stage you can continue from:
 `git checkout checkpoint/stage-01`. Those examples were made with the offline mock model.
 
 ## 3. Open the notebooks in Colab
@@ -44,6 +50,13 @@ These links open the kit's own copy. After you fork, replace `arpitRanjan` with 
 - [09_rag_pipeline](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/09_rag_pipeline.ipynb)
 - [09_retrieval_eval](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/09_retrieval_eval.ipynb)
 - [09_permissions](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/09_permissions.ipynb)
+- [10_tracing](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/10_tracing.ipynb)
+- [10_cost_levers](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/10_cost_levers.ipynb)
+- [10_ab_readout](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/10_ab_readout.ipynb)
+- [11_customer_deployment](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/11_customer_deployment.ipynb)
+- [12_locale_eval](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/12_locale_eval.ipynb)
+- [13_guardrails](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/13_guardrails.ipynb)
+- [13_injection_and_redteam](https://colab.research.google.com/github/arpitRanjan/atp-builder-kit/blob/main/notebooks/13_injection_and_redteam.ipynb)
 
 The first cell clones the repo into Colab so the notebook can find `kit/` and `data/`, and installs only
 what that notebook needs. Colab already has numpy, pydantic and sentence-transformers. The 09 notebooks
@@ -68,7 +81,7 @@ promptfoo (Chapter 8) is an npm tool, not a pip package: it needs Node 20 or lat
 - **No Gemini key?** Fill in `FALLBACK_BASE_URL`, `FALLBACK_API_KEY` and `FALLBACK_MODEL` for any
   OpenAI style API (OpenAI, Groq, OpenRouter).
 - **No key at all?** Set `KIT_OFFLINE=1`. Every call goes to a fake model with repeatable answers.
-  For the Chapter 4 to 9 notebooks the fake model follows simple keyword rules (`kit/mock_brain.py`),
+  For the Chapter 4 to 13 notebooks the fake model follows simple keyword rules (`kit/mock_brain.py`),
   and the embedder and reranker are deterministic stand-ins, so nothing is downloaded. Offline numbers
   only show the notebook works: run it live for numbers you can use.
 
@@ -100,9 +113,15 @@ corpus/make_corpus.py writes the Quillnote help pages (Quillnote is an invented 
 mcp_server/server.py  an MCP server with one read-only tool, search_docs
 app/app.py            a small Streamlit help assistant
 kit/rag.py            parse, chunk, embed, index, BM25, fusion and rerank, for the 09 notebooks
-kit/mock_brain.py     the offline mock's keyword rules for the Chapter 4 to 9 notebooks
+kit/mock_brain.py     the offline mock's keyword rules for the Chapter 4 to 13 notebooks
+kit/tracing.py        spans around the app's answer function (traces/spans.jsonl), percentiles, cost per task
+kit/guardrails.py     input and output checks, refusal, rate limit, spend cap, host allowlist for tool handlers
 scripts/acceptance.py acceptance cases (evals/acceptance.jsonl) against a ship bar: --bar 0.8 [--url URL]
 evals/                labels.csv (judge calibration), golden.jsonl, gates.py, promptfooconfig.yaml, run_evals.py
+evals/ (wave 3)       golden_es.jsonl and labels_es.csv (Spanish), guardrail_probes.jsonl, regression.jsonl (red team)
+data/customer_northwind/  a SIMULATED second customer (Northwind Learning, invented): brief, 10 pages, field log template
+templates/            HANDOFF.md (the handover bundle) and TAKEHOME.md (a take-home brief)
+Makefile              make evals (the eval suite in one command), make traces (20 traced requests, span export)
 .github/workflows/evals.yml.example  rename to evals.yml to run the golden set on every pull request
 tests/                pytest, all offline
 ```
@@ -115,6 +134,24 @@ format it differently. The system prompt asks the model to reply with ONE JSON o
 The loop parses the outermost `{...}` from the reply, runs the tool in code, and adds `CALL n:` and
 `RESULT n:` lines to the next prompt. The same loop runs on Gemini, any OpenAI style API and the mock.
 `draft_issue` only appends to a local `outbox.jsonl` file; nothing is sent anywhere.
+
+### Cached tokens and time to first token (Chapter 10)
+
+`call_llm` also returns `cached_tokens` and `ttft_s`. Cached tokens come from
+`usage.prompt_tokens_details.cached_tokens` (OpenAI) or `usage_metadata.cached_content_token_count`
+(Gemini). `None` means the provider did not report it, which can happen on the Gemini free tier.
+With `stream=True` the time to first token is measured on the stream; without it, it is the time to
+the whole reply (`ttft_kind` says which). The offline mock makes both up.
+
+### The handover bundle (Chapter 14)
+
+```
+make test      # offline tests
+make evals     # the golden set through the app; exit 1 if a hard gate fails
+make traces    # 20 traced requests, writes traces/spans.jsonl and traces/spans.csv (git ignores traces/)
+```
+
+Add `KIT_OFFLINE=1` in front of `make evals` or `make traces` to use the mock model.
 
 ### Evals in CI (Chapter 8)
 
@@ -145,6 +182,12 @@ GitHub Actions runs this on every push, on pull requests and weekly (`.github/wo
   and `09_rag_pipeline` with the real local `all-MiniLM-L6-v2` embedder. The other new notebooks
   (04, 06 harness, context ablation and structured output, 08, 09 retrieval eval and permissions)
   were tested offline only.
+- Live (2026-11-14, wave 3): `10_tracing` and `13_injection_and_redteam` through `openai_compatible`
+  with `gpt-5.4-mini` (streaming time to first token, cached token field, the failover cell with
+  `gpt-5.4-nano` as the second model, since only one provider key was used). The other wave 3
+  notebooks (10 cost levers and A/B readout, 11, 12, 13 guardrails) were tested offline only.
+  The Langfuse cell has not been sent to a real Langfuse account. Gemini streaming and Gemini's
+  cached token field are untested.
 - promptfoo 0.125.1 ran `evals/promptfooconfig.yaml` offline with Node 23 (same 17 of 20 hard gate
   passes as `evals/run_evals.py`). The `evals.yml.example` workflow has not run on GitHub yet.
 - **Not tested live: Gemini.** The Gemini code in `kit/llm.py` and `scripts/call_model.py` follows the
