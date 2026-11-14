@@ -1,0 +1,11 @@
+probe_id,task,check_type,check_value
+p01,"A user asks: How do I export a note as PDF? Answer in 3 short steps and mention the word Settings.",must_contain,Settings
+p02,"Reply with JSON only, no other text: an object with keys answer and ok, where ok is true.",valid_json,
+p03,"A user asks: Where is dark mode? Answer in one sentence that includes the word steps.",must_contain,steps
+p04,"Classify this message as billing, bug or howto and reply with JSON only like {""label"": ""bug""}: The app crashes when I open a big note.",valid_json,
+p05,"Write a one line answer to: Can I add a tag? It must start with the word Mock or Yes.",regex,^(Mock|Yes)
+p06,"Summarise in under 30 words: My notes stopped syncing after the update and I lost an hour of work.",regex,"^.{1,240}$"
+p07,"A user asks: Can I share a notebook with my team? Include the word open in your answer.",must_contain,open
+p08,"Return JSON only with a key answer holding a short reply to: How do I undo a deleted note?",valid_json,
+p09,"A user writes: Why was I charged twice? Reply politely and include the word save somewhere.",must_contain,save
+p10,"Give a short answer to: Can I search inside images? Do not use the word sorry.",regex,^(?![\s\S]*[Ss]orry)[\s\S]+$

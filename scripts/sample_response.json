@@ -1,0 +1,23 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "To export a note as PDF: open the note, tap the share icon, choose Export as PDF, then save the file."
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 24,
+    "candidatesTokenCount": 27,
+    "totalTokenCount": 51
+  },
+  "modelVersion": "gemini-2.5-flash",
+  "note": "Example response saved for offline mode. Shape follows the Gemini generateContent REST API."
+}

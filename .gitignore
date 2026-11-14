@@ -1,0 +1,14 @@
+# Secrets: never commit these
+.env
+.streamlit/secrets.toml
+
+# Python and tool clutter
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Files the scripts write while you practise
+runs.csv
+scripts/runs.csv

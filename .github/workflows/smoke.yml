@@ -1,0 +1,51 @@
+name: smoke
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1" # every Monday 06:00 UTC
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+        env:
+          KIT_OFFLINE: "1"
+
+  live-notebook-01:
+    # Runs only when the repo has a GEMINI_API_KEY secret.
+    needs: offline
+    runs-on: ubuntu-latest
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    steps:
+      - name: Check for the key
+        id: key
+        run: echo "present=${{ env.GEMINI_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        if: steps.key.outputs.present == 'true'
+      - uses: actions/setup-python@v5
+        if: steps.key.outputs.present == 'true'
+        with:
+          python-version: "3.11"
+      - if: steps.key.outputs.present == 'true'
+        run: pip install -r requirements.txt
+      - name: Run notebook 01 live
+        if: steps.key.outputs.present == 'true'
+        env:
+          KIT_OUTPUT_DIR: /tmp/kit-out
+        run: |
+          python - <<'EOF'
+          import nbformat
+          from nbclient import NotebookClient
+          nb = nbformat.read("notebooks/01_first_calls.ipynb", as_version=4)
+          NotebookClient(nb, timeout=600, kernel_name="python3", resources={"metadata": {"path": "notebooks"}}).execute()
+          print("notebook 01 ran live")
+          EOF

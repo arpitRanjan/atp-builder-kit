@@ -1,0 +1,12 @@
+# Pinned versions the kit was tested with (Python 3.11).
+google-genai==3.3.0
+openai==3.51.0
+requests==2.34.2
+pandas==3.1.1
+duckdb==2.0.0
+streamlit==1.67.0
+mcp==2.3.0
+pytest==9.2.0
+nbclient==0.11.0
+nbformat==5.11.1
+ipykernel==7.4.0
