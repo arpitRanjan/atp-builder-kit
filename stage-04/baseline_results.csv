@@ -1,0 +1,26 @@
+case_id,input,expected,pass_rule,method,system_output,passed,latency_s,cost_usd
+q01,How do I create a new note and rename it later?,qn-01,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-01,True,0.000614,0.0
+q02,Can I format and edit an existing note after I save it?,qn-01,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-01,True,0.000517,0.0
+q03,How do I export one of my notes as a PDF file?,qn-02,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-02,True,0.000492,0.0
+q04,Is there a way to save a note as PDF for printing?,qn-02,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-02,True,0.000459,0.0
+q05,"How do tags work, and can I organize notes into folders too?",qn-03,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-01,False,0.000423,0.0
+q06,What's the best way to group my notes by folder and tag?,qn-03,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-01,False,0.00041,0.0
+q07,How can I search for a note by keyword?,qn-04,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-04,True,0.000401,0.0
+q08,"Why aren't my latest notes showing up on my other device, and how do I fix sync?",qn-05,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-05,True,0.000401,0.0
+q09,How do I switch the app to dark mode?,qn-06,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-06,True,0.000397,0.0
+q10,Can I change the theme colors in the app?,qn-06,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-06,True,0.000393,0.0
+q11,I deleted a note by accident. Can I get it back?,qn-07,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-07,True,0.000475,0.0
+q12,Will the app still work if I have no internet connection?,qn-08,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-08,True,0.000518,0.0
+q13,How do I use the app offline and what happens when I reconnect?,qn-08 qn-05,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-08,True,0.000474,0.0
+q14,Where can I see the different plans and subscription prices?,qn-09,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-09,True,0.00043,0.0
+q15,How do I share a notebook with my team members?,qn-10,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-10,True,0.000405,0.0
+q16,Can I invite coworkers to a shared notebook and control what they can access?,qn-10 qn-11,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-10,True,0.000474,0.0
+q17,"What roles are available for team members, and what can each role do?",qn-11,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-11,True,0.000436,0.0
+q18,How do shared templates work for a team workspace?,qn-12,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-12,True,0.000418,0.0
+q19,Can our team create templates that everyone in the workspace can use?,qn-12,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-12,True,0.000404,0.0
+q20,How can I organize notes with tags and then find them quickly with search?,qn-03 qn-04,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-04,True,0.000398,0.0
+q21,"If I accidentally delete a note while offline, can I recover it later?",qn-07 qn-08,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-07,True,0.000611,0.0
+q22,How do I request a refund for being charged twice?,qn-13,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-13,True,0.000481,0.0
+q23,A customer asked us to erase all of their data. How do I do that?,qn-14,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-14,True,0.000485,0.0
+q24,Where can I view the audit log to see recent admin activity?,qn-15,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-15,True,0.00045,0.0
+q25,Can I check the audit log to confirm when a user's data was deleted?,qn-15 qn-14,A case passes when the picked page id is one of the case's expected page ids.,keyword rule,qn-14,True,0.00043,0.0

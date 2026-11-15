@@ -1,36 +1,29 @@
-# Stage 4: discovery and strategy
+# Stage 4: discovery and strategy (EXAMPLE, offline mock model)
 
-Submit the GitHub repo folder link to `stage-04/` in your fork.
-
-## Checklist
-
-| File in `stage-04/` | What the brief asks for | Made by |
-| --- | --- | --- |
-| `04_baseline_vs_llm.ipynb` | Your run, with the pass rule written before the run (Step 2) and your own edited cells | `notebooks/04_baseline_vs_llm.ipynb` |
-| `llm_results.csv` | 20 or more cases: case id, input, expected result, pass rule, system output, pass or fail, latency, cost | Step 6 |
-| `baseline_results.csv` | The non LLM baseline (keyword rule) on the same case ids: pass or fail, latency, cost | Step 6 |
-| `comparison.md` (and `.csv`) | One table: pass rate, average latency, average cost for both methods; which you would use now and why in 3 sentences or less, with links | Step 7 (write `RECOMMENDATION`) |
-| `stack_choice.md` | 2 or more model + vendor + harness combinations scored with your Stage 1 numbers and each vendor's data terms, a dated note per vendor, links to the Stage 1 files | Step 9 (edit `CANDIDATES`) |
-| `README.md` | The riskiest assumption in one sentence, and a strategy note with the headings below | you, from the template below |
-
-Step 9 reads `stage-01/probe_summary.csv`. In Colab, upload it next to the notebook.
-
-## Show your own work
-
-The grader looks for your changes beyond the kit: your own assumption and cases, an edited baseline,
-your own candidates and data terms notes. Commit each change, so it shows in your repo history.
-
-## README template
-
-Every claim must link to a file in the repo.
-
-```
-Riskiest assumption: <one sentence>
+Riskiest assumption: given a user's question, a model can pick the help page that answers it, well enough to
+be worth its cost over a free keyword rule.
 
 ## Decision
+
+Keep the keyword rule as the page picker for now, and use it as the baseline every model change must beat
+([comparison.md](comparison.md)).
+
 ## What we measured
-(link to llm_results.csv, baseline_results.csv, comparison.md)
+
+- 25 labeled cases, pass rule and 80 percent bar written before the run ([04_baseline_vs_llm.ipynb](04_baseline_vs_llm.ipynb), Step 2).
+- LLM: 88 percent pass (22 of 25), 0.61 s average latency, $0.00132 average cost per case ([llm_results.csv](llm_results.csv)).
+- Keyword rule on the same case ids: 92 percent pass (23 of 25), under 1 ms, $0 ([baseline_results.csv](baseline_results.csv)).
+- The assumption holds against the bar (88 percent is over 80 percent), but the free rule is better on these cases ([comparison.md](comparison.md)).
+
 ## Chosen model vendor harness
-(link to stack_choice.md and the Stage 1 files it used)
+
+`mock-model-b` + Google Gemini API paid tier + the kit harness (`app/app.py`, keyword search, top 3), score
+4.02 of 5 against 3.41 for model A on the free tier ([stack_choice.md](stack_choice.md)). It is cheaper per
+task in Stage 1 ([../stage-01/probe_summary.csv](../stage-01/probe_summary.csv)) and its data terms are better for user data,
+but its Stage 1 pass rate is lower (68 against 90 percent), so it needs the JSON retry from Stage 1 first.
+
 ## What I would do next
-```
+
+1. Rerun Stage 1 and this notebook with real models, then rescore [stack_choice.md](stack_choice.md).
+2. Read each vendor's data terms page and write the date in `CANDIDATES`.
+3. Add the 5 cases where the two methods disagree to the Stage 5 acceptance set.
