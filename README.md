@@ -14,7 +14,7 @@ In Chapter 3 you fork the kit: click **Fork** on GitHub, and your copy lives at 
 
 | Folder | What you put there |
 | --- | --- |
-| `stage-01/` | your runs of the two `01` notebooks, plus `predictions.md` |
+| `stage-01/` | your runs of the two `01` notebooks; predictions and README at the end of the probe set |
 | `stage-02/` | your runs of the two `02` notebooks, plus `failure_backlog.csv` |
 | `stage-03/` | `CODEMAP.md`, `prompts/`, your MCP tool, `DEPLOYED.md` |
 | `stage-04/` | your run of `04_baseline_vs_llm`, `baseline_vs_llm.csv`, `ASSUMPTION.md` |
