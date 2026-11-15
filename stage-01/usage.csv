@@ -1,0 +1,11 @@
+call,question,output_cap,input_tokens,output_tokens,stop_reason,latency_s,cost_usd
+1,How do I export a note as PDF?,200,29,29,STOP,0.353,0.000145
+2,My notes stopped syncing,200,28,27,STOP,0.582,0.000136
+3,Can I share a notebook with my team?,200,31,30,STOP,0.988,0.000151
+4,How do I undo a deleted note?,200,29,28,STOP,0.907,0.000141
+5,Where is dark mode?,200,27,26,STOP,0.218,0.000131
+6,Can I search inside images?,200,29,28,STOP,0.906,0.000141
+7,Why was I charged twice?,200,28,27,STOP,0.961,0.000136
+8,How do I add a tag?,200,27,26,STOP,0.754,0.000131
+9,The app crashes when I open a big note,200,31,31,STOP,0.36,0.000155
+10,Can I use Quillnote offline?,10,29,10,MAX_TOKENS,0.874,6.9e-05

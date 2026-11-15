@@ -1,0 +1,3 @@
+model,pass_rate,cost_per_task,median_latency_s,calls
+mock-model-a,0.9,0.000155,0.512,50
+mock-model-b,0.68,3.2e-05,0.594,50
