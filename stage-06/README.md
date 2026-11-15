@@ -10,7 +10,7 @@ Change the tasks, tools and checks in `notebooks/06_harness.ipynb` to fit your f
 
 | File | What it must show | Made by |
 | --- | --- | --- |
-| `06_harness.ipynb` | Your loop with 2 or 3 tools: `search_docs` (your Stage 3 MCP search tool, from `mcp_server/server.py`) and `draft_issue` (a mock state-changing tool that writes only to a local file). All five controls in code: `STEP_BUDGET`, `SPEND_BUDGET_USD`, `MAX_RETRIES` (capped retry), the approval check (`APPROVED`), and `validate_final` with `MAX_VALIDATION_RETRIES = 1` | your run of `notebooks/06_harness.ipynb`, saved here |
+| `06_harness.ipynb` | Your loop with 2 or 3 tools: `search_docs` (your Stage 3 MCP search tool, from `mcp_server/server.py`) and `draft_issue` (a mock state-changing tool that writes only to a local file). All five controls in code: `STEP_BUDGET`, `SPEND_BUDGET_USD`, `MAX_RETRIES` (capped retry), the approval check (each task's `approved` flag, with its pass check in `expect`), and `validate_final` with `MAX_VALIDATION_RETRIES = 1` | your run of `notebooks/06_harness.ipynb`, saved here |
 | `traces/run.jsonl` | One JSON line per step: `run_id`, `step`, `action`, and the `stop`, `retry`, `validation`, `approval` and `error` flags | `06_harness`, step 6 |
 | `pass_rates.csv` | 10 tasks, 7 rows: all on, all off, and one row each with only the step budget, spend budget, capped retry, approval check or validation turned off | `06_harness`, step 7 |
 | `runs.csv` | One row per run (70 runs), with its stop reason and cost | `06_harness`, step 6 |

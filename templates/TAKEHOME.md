@@ -21,7 +21,7 @@ Why this one: the failure or user need it fixes, with its evidence (a failing ca
 ## The eval gate that approves it
 
 - Gate: <for example: `make evals` hard gates in CI, `.github/workflows/evals.yml`>
-- Bar: <for example: 18 of 20 hard gates, and no regression case fails>
+- Bar: <for example: 17 of 20 hard gates (85%), set as `--bar 0.85` (`EVAL_BAR`) in `.github/workflows/evals.yml`>
 - Result before: <number, from a real run>
 - Result after: <number, from a real run, with the CI run link>
 

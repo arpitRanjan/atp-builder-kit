@@ -14,6 +14,7 @@ Run `notebooks/11_customer_deployment.ipynb`. It writes every file below into `s
 | `stage-11/leak-test/raw-<role>.jsonl` | the raw leak test results per role, plus a control run with the filter off | notebook step 5 |
 | `stage-11/field-log.csv` | every configuration choice, issue and workaround. Columns: date, item, issue, workaround, decision (configure, build or drop), role_or_surface, note. At least one item in 2 or more rows. | notebook step 6, then add your own rows by hand |
 | `stage-11/change-evidence.csv` | before and after numbers for the one change you shipped | notebook step 7 |
+| `stage-11/answer.py` | the answer function the notebook imports. Your one change goes here. | the kit, then you (see The one change) |
 | `stage-11/procurement-pack.md` | the buyer's questions, each answer linked to a file in your repo | you, from `templates/PROCUREMENT_PACK.md` |
 | `stage-11/README.md` | your README (replace this checklist) | you |
 
@@ -31,9 +32,10 @@ A section called **Decisions, Measures, and Next** that says:
 ## The one change
 
 Pick a recurring item from `field-log.csv` (the `item` column shows which ones repeat). Step 7 shows one
-example: an answer that always ends with "contact support" when no page answers. Put your change in a file
-you commit (for example your answer function in `app/app.py`), rerun the notebook, and copy the commit
-hash into your README.
+example: an answer that always ends with "contact support" when no page answers. That example lives in
+`stage-11/answer.py`. The notebook imports its `answer` and `answer_with_support` functions, so an edit
+to that file changes what the notebook measures. Make your change there, rerun the notebook, commit the
+file, and copy the commit hash into your README.
 
 ## Procurement pack
 

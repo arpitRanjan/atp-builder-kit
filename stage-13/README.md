@@ -40,7 +40,9 @@ def generate(q):
 result = guarded_answer(question, user_id, generate, check, role=role, visibility=visibility, limiter=LIMITER, cap=CAP)
 ```
 
-That gives the input check in parallel with generation, the output check, the refusal with a fallback response, the per-user rate limit and the spend cap. The host allowlist is `HostAllowlist(...).guard(fetch_url)`: it runs inside the tool handler.
+That gives the input check in parallel with generation, the output check, the refusal with a fallback response, the per-user rate limit and the spend cap. The host allowlist is `HostAllowlist(...).guard(fetch_url)`: it runs inside the tool handler. The app already has one:
+`app/tools.py` wraps `fetch_url` this way and logs blocked calls to `stage-13/blocked_calls.jsonl`. Point your
+README at it, and add your own hosts to `ALLOWED_HOSTS` there.
 
 ## Your README must have
 

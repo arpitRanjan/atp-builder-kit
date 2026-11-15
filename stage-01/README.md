@@ -7,11 +7,11 @@ or the notebooks on GitHub or a Gist). When you fork the kit in Chapter 3, move 
 
 | What the brief asks for | Where it is made |
 | --- | --- |
-| Notebook 1: 10 real calls with a hand set system prompt, temperature and output cap | `notebooks/01_first_calls.ipynb`, Steps 3 and 4 |
+| Notebook 1: 10 real calls with a hand set system prompt, temperature and output cap, over the kit's practice help centre data | `notebooks/01_first_calls.ipynb`, Steps 3 and 4 (Step 3 puts the help pages from `corpus/` in the system prompt) |
 | A usage table with 10 rows: input tokens, output tokens, stop reason, latency, cost | Step 5 (also saved as `stage-01/usage.csv`) |
 | One row with a forced truncation caused by your output cap | call 10 uses `TRUNCATE_CAP`; Step 6 shows the row |
 | The key from Colab secrets or an environment variable, never in a cell or output | Step 2 (Colab: key icon, add `GEMINI_API_KEY`) |
-| Notebook 2: 10 probe tasks, each with a pass criterion written before any run | `notebooks/01_probe_set.ipynb`, Steps 3 and 4 (edit `data/probes.csv`) |
+| Notebook 2: 10 probe tasks, each with a pass criterion written before any run | `notebooks/01_probe_set.ipynb`, Step 3 (edit the `MY_PROBES` list in the cell) |
 | Each task run 5 times on 2 models | Step 5 (saved as `stage-01/probe_runs.csv`) |
 | Pass rate, cost per task and median latency per model | Step 7 (saved as `stage-01/probe_summary.csv`) |
 | Five predicted weaknesses, each tied to model, context, harness or surface; one disproved and rewritten narrower | Step 9 table, in the probe set notebook |

@@ -16,10 +16,13 @@ This stage lives in the repo paths the product uses, not only in `stage-08/`. On
 | `notebooks/08_judge_calibration.ipynb` | Your executed run, against YOUR labels in `evals/labels.csv` (keep the `split` column). It prints the true positive and true negative rates, and saves `stage-08/judge_calibration.json` | your run of the notebook, committed at that path |
 | `.github/workflows/evals.yml` | Runs the suite on every pull request: rename `evals.yml.example` | you |
 | `prompts/help_vN.md` and `prompts/APPROVALS.md` | Each prompt version names the eval run that approved it (see below) | you |
-| `evals/runs/<run id>.json` | The saved eval run each approval points to | `python evals/run_evals.py --save` |
+| `evals/runs/<run id>.json` | The saved eval run each approval points to. It also keeps every case's question, reference answer and model answer, with an empty `label` field, so you can hand label rows from a real run | `python evals/run_evals.py --save` |
 | `stage-08/README.md` | The sections below | you |
 
 ## How to approve a prompt version
+
+`prompts/APPROVALS.md` ships with one row: `help_v1.md` approved by `kit-baseline`. That row is the kit's
+baseline, not a real run. It passes only while `help_v1.md` is unchanged. Replace it with your own run.
 
 1. Copy `prompts/help_v1.md` to `help_v2.md`, change the copy, point `PROMPT_FILE` in `app/app.py` at it.
 2. Run `python evals/run_evals.py --save`. It prints a run id and writes `evals/runs/<run id>.json`,
@@ -29,12 +32,18 @@ This stage lives in the repo paths the product uses, not only in `stage-08/`. On
 4. `python evals/run_evals.py --check-prompts` fails if any prompt has no row, if the run did not pass,
    or if the run was made on different prompt text. The CI workflow runs this check too.
 
+## The pass bar
+
+`python evals/run_evals.py --bar 0.85` passes when at least 85% of cases pass the hard gates. With no `--bar`,
+every case must pass. The workflow sets the bar once, in `EVAL_BAR`, and promptfoo uses the same number
+(`PROMPTFOO_PASS_RATE_THRESHOLD`). Pick your own bar and write why in this README.
+
 ## How to get a blocked pull request
 
 1. Rename `.github/workflows/evals.yml.example` to `evals.yml` and merge it to `main`.
 2. In Settings, Branches, add a rule for `main` that requires the `golden-set` check to pass.
-3. Open a pull request that breaks a case, for example a prompt that drops citations, or a new
-   regression case your app fails. The check goes red and the merge is blocked.
+3. Open a pull request that pushes the pass rate under your bar, for example a prompt that drops citations.
+   One new failing case may stay above an 85% bar. The check goes red and the merge is blocked.
 4. Fix it (or close it) and put the pull request link in this README.
 
 ## The judge

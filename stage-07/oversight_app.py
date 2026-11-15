@@ -5,7 +5,7 @@ Run locally:   streamlit run stage-07/oversight_app.py
 Deploy:        on Streamlit Community Cloud, pick this file as the app file (same secrets as app/app.py).
 Logs:          stage-07/approvals.jsonl, stage-07/feedback.jsonl and stage-07/outbox.jsonl (set
                STAGE07_LOG_DIR to write them elsewhere). A deployed app cannot write into your repo,
-               so use the download buttons at the bottom and commit the files you download.
+               so use the download buttons in the sidebar and commit the files you download.
 """
 import os
 import sys
@@ -31,7 +31,19 @@ def show_refusal(refusal):
     st.error(f"**{refusal['limit']}**\n\nWhy: {refusal['reason']}\n\nWhat you can do: {refusal['next_step']}")
 
 
-def show_answer(question, result):
+def cached_answer(question):
+    """The answer shown for this question, made once. A rerun (a feedback click, a typed reason) reuses it,
+    so there is no new model call and the feedback attaches to the answer the user saw."""
+    import streamlit as st
+    shown = st.session_state.get("shown")
+    if not shown or shown["question"] != question:
+        result = answer(question)
+        shown = {"question": question, "result": result, "answer_id": answer_id(question, result["text"])}
+        st.session_state.shown = shown
+    return shown["result"], shown["answer_id"]
+
+
+def show_answer(question, result, aid):
     import streamlit as st
     if result.get("fallback"):
         st.info(result["text"])
@@ -39,7 +51,6 @@ def show_answer(question, result):
     for n, c in enumerate(cite_claims(result["text"], result["hits"]), 1):
         cites = " ".join(f"`[{x['id']}] {x['title']}`" for x in c["citations"]) or ":orange[no source: check this]"
         st.markdown(f"**Claim {n}:** {c['claim']}  \nSource: {cites}")
-    aid = answer_id(question, result["text"])
     st.caption(f"Answer id: {aid}")
     with st.expander("Was this wrong? Tell us (writes an eval row)"):
         reason = st.text_input("What was wrong (optional)", key=f"reason-{aid}")
@@ -53,6 +64,15 @@ def show_answer(question, result):
             log_feedback(FEEDBACK, "edit", question, result["text"], result["cited"], edited_text=edited,
                          reason=reason or None, session_id=st.session_state.sid)
             st.success("Saved to feedback.jsonl")
+
+
+def finish_decision(message):
+    """After approve, edit or reject: clear the question box so the same request does not draft again."""
+    import streamlit as st
+    st.session_state.pending, st.session_state.editing, st.session_state.done = None, False, message
+    st.session_state.question = ""
+    st.session_state.pop("shown", None)
+    st.rerun()
 
 
 def approval_screen():
@@ -72,14 +92,12 @@ def approval_screen():
     if approve.button("Approve", type="primary"):
         write_draft(OUTBOX, payload)
         log_approval(APPROVALS, payload["run_id"], "approve", payload, seconds_to_decide=elapsed(), **common)
-        st.session_state.pending, st.session_state.done = None, "Approved and saved to the outbox."
-        st.rerun()
+        finish_decision("Approved and saved to the outbox.")
     if edit.button("Edit"):
         st.session_state.editing = True
     if reject.button("Reject"):
         log_approval(APPROVALS, payload["run_id"], "reject", payload, seconds_to_decide=elapsed(), **common)
-        st.session_state.pending, st.session_state.done = None, "Rejected. Nothing was written."
-        st.rerun()
+        finish_decision("Rejected. Nothing was written.")
     if st.session_state.get("editing"):
         with st.form("edit-draft"):
             title = st.text_input("title", payload["title"])
@@ -89,9 +107,7 @@ def approval_screen():
                 write_draft(OUTBOX, edited)
                 log_approval(APPROVALS, payload["run_id"], "edit", payload, edited=edited,
                              seconds_to_decide=elapsed(), **common)
-                st.session_state.pending, st.session_state.editing = None, False
-                st.session_state.done = "Edited, approved and saved to the outbox."
-                st.rerun()
+                finish_decision("Edited, approved and saved to the outbox.")
 
 
 def main():
@@ -104,7 +120,7 @@ def main():
     st.session_state.setdefault("pending", None)
     st.session_state.setdefault("question", "")
     seed = st.sidebar.checkbox("Usability test: plant one mistake in the next draft")
-    for path in (APPROVALS, FEEDBACK):  # a deployed app cannot write to your repo: download, then commit
+    for path in (APPROVALS, FEEDBACK, OUTBOX):  # a deployed app cannot write to your repo: download, then commit
         if path.exists():
             st.sidebar.download_button(f"Download {path.name}", path.read_text(), file_name=path.name)
     if st.session_state.get("done"):
@@ -132,7 +148,7 @@ def main():
         st.session_state.pending = {"payload": seed_mistake(payload) if seed else payload,
                                     "seeded": bool(seed), "shown_at": time.time()}
         st.rerun()
-    show_answer(question, answer(question))
+    show_answer(question, *cached_answer(question))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,8 @@
+# Small install for Streamlit Community Cloud. Streamlit Cloud reads the requirements file next to
+# the app's main file (app/app.py) before the one at the repo root, so this file keeps the build light:
+# no PyTorch, no notebook packages. These are only what app/app.py imports
+# (kit/llm.py for the model, mcp_server/server.py for search_docs).
+streamlit==1.67.0
+google-genai==3.3.0
+openai==3.51.0
+mcp==2.3.0

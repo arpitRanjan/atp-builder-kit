@@ -206,7 +206,7 @@ def test_stage_readmes_name_the_brief_files():
     for stage, names in need.items():
         text = (ROOT / stage / "README.md").read_text()
         assert all(n in text for n in names), stage
-        assert "—" not in text and "–" not in text
+        assert chr(0x2014) not in text and chr(0x2013) not in text
 
 
 def test_workflow_runs_the_suite_retrieval_and_prompt_checks():

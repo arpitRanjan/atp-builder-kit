@@ -1,0 +1,21 @@
+{
+  // GitHub Codespaces: a free computer in your browser with the kit already installed.
+  // On your fork's page: green Code button, Codespaces tab, Create codespace on main.
+  "name": "AllthingsPM builder kit",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" }
+  },
+  // The small CPU build of PyTorch first, so the install skips about 3 GB of GPU files.
+  "postCreateCommand": "pip install --quiet torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu && pip install --quiet -r requirements.txt",
+  "forwardPorts": [8501, 8000, 6274, 6277],
+  "portsAttributes": {
+    "8501": { "label": "Streamlit app", "onAutoForward": "openBrowser" },
+    "8000": { "label": "API (app/api.py)" },
+    "6274": { "label": "MCP Inspector", "onAutoForward": "openBrowser" },
+    "6277": { "label": "MCP Inspector proxy" }
+  },
+  "customizations": {
+    "vscode": { "extensions": ["ms-python.python", "ms-toolsai.jupyter"] }
+  }
+}

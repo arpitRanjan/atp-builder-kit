@@ -165,6 +165,7 @@ Add `KIT_OFFLINE=1` in front of `make evals` or `make traces` to use the mock mo
 
 ```
 python evals/run_evals.py                               # no npm: exit 1 if a hard gate fails
+python evals/run_evals.py --bar 0.85                    # pass when 85% or more of cases pass the hard gates
 npx promptfoo@0.125.1 eval -c evals/promptfooconfig.yaml # the same gates in promptfoo
 ```
 

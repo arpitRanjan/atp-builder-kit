@@ -17,8 +17,10 @@ in Chapter 3), submit links to both notebooks and keep the README sections in St
 
 ## Add your Stage 1 probe failures
 
-Step 11 reads your `stage-01/probe_runs.csv` (written by `01_probe_set`). In Colab, upload that file next to
-the notebook. Each failed probe becomes a backlog row with `from_stage1_probe = yes`.
+Step 11 reads your `stage-01/probe_runs.csv` (written by `01_probe_set`). In Colab, upload that file with the
+Files panel. It lands in `/content`, and the notebook looks there too. The cell prints which file it used.
+If it finds none, it prints every place it looked. Each failed probe becomes a backlog row with
+`from_stage1_probe = yes`.
 
 ## Labels and PII
 

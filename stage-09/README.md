@@ -23,6 +23,8 @@ Submit: the GitHub link to your repo's `stage-09/` folder.
   Each has `page_ids` (the right pages) and `role` (who may read them).
 - `evals/retrieval_check.py`: recall at k, citation faithfulness and the two-user leak test. It exits 1 below
   `--min-recall` or `--min-faithful`, or on any leak. `.github/workflows/evals.yml.example` runs it on every pull request.
+  That CI step answers with the offline mock (`KIT_OFFLINE: "1"`), so free tier rate limits cannot fail it.
+  Recall and the leak test need no model. Set it to `"0"` to grade citations with your real model.
 - `tests/test_permissions.py`: the same leak test in pytest.
 - The app: answer through `kit/rag.py` `answer_with_citations(question, search, role)` with the user's role.
   Link your app change from the README.

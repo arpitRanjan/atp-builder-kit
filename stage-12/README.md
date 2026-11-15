@@ -18,23 +18,21 @@ Run `notebooks/12_locale_eval.ipynb`. It writes every file below into `stage-12/
 | `stage-12/results/ci-results.json` | the result file CI writes: pass rate, bar, every case | `python stage-12/locale_evals.py` (notebook step 6, and CI) |
 | `stage-12/judge-prompt.md` | the one judge criterion and the exact judge prompt | notebook step 7 |
 | `stage-12/judge-agreement.md` and `.csv` | agreement on the 10 Spanish hand labels (count and percent) and a table of every disagreement | notebook step 7 |
-| `.github/workflows/evals.yml` | your Stage 8 workflow, plus the step below | you |
+| `.github/workflows/evals.yml` | your Stage 8 workflow, with its Spanish step kept (see below) | you |
 | `stage-12/README.md` | your README (replace this checklist) | you |
 
 ## The CI change
 
-Add this step to `.github/workflows/evals.yml`, after the golden set step, so the Spanish cases run on every pull request:
+You do not need to add a step. `.github/workflows/evals.yml.example` already has the Spanish step.
+Keep it when you rename the file to `evals.yml` in Stage 8. It runs only once `stage-12/golden-set.jsonl`
+exists. Before that it prints a skip message and passes. After you commit your golden set, it runs on every
+pull request:
 
 ```
-      - name: Spanish golden set (stage 12)
-        run: python stage-12/locale_evals.py --bar 0.8 --out stage-12/results/ci-results.json
-      - name: Keep the Spanish results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: stage-12-results
-          path: stage-12/results/ci-results.json
+python stage-12/locale_evals.py --bar 0.8 --out stage-12/results/ci-results.json
 ```
+
+The workflow's last step uploads `stage-12/results/` with the other eval results.
 
 Locally the same thing is: `python stage-12/locale_evals.py` (exit 1 means under the bar).
 

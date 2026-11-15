@@ -2,10 +2,14 @@
 
 Run:      python evals/run_evals.py          (add KIT_OFFLINE=1 to use the mock model)
 Options:  --split dev|held-out|regression    only that part of the golden set
-          --save                             write the run record to evals/runs/<run id>.json
+          --save                             write the run record to evals/runs/<run id>.json, with every case's
+                                             question, reference answer and the model's answer (for hand labels)
+          --bar 0.85                         pass when at least this share of cases passes the hard gates
+                                             (default 1.0: every case must pass)
           --check-prompts                    every prompt in prompts/ must name a passing eval run
                                              in prompts/APPROVALS.md (see stage-08/README.md)
-Exit code 1 when a hard gate fails (or the judge fails with JUDGE_HARD=1), so CI can block the pull request.
+Exit code 1 when the pass rate is under the bar (with the default bar, when any hard gate fails, or the judge
+fails with JUDGE_HARD=1), so CI can block the pull request.
 The same graders run in promptfoo:  npx promptfoo@0.125.1 eval -c evals/promptfooconfig.yaml
 """
 import argparse
@@ -28,6 +32,10 @@ GOLDEN = ROOT / "evals" / "golden.jsonl"
 RUNS = ROOT / "evals" / "runs"
 PROMPTS = ROOT / "prompts"
 SPLITS = ("dev", "held-out", "regression")
+# The kit's own baseline approval in prompts/APPROVALS.md. It approves the kit's help_v1.md text, unchanged, so
+# --check-prompts passes on a fresh fork. It has no run file. Make a real run with --save and approve that instead.
+KIT_BASELINE = "kit-baseline"
+KIT_BASELINE_PROMPTS = {"help_v1.md": "e9aaae95d6da02df6850c54c1f013bb383133e350e4bcb159d7ce183b89c6052"}
 
 
 def load_cases(path=GOLDEN):
@@ -53,7 +61,9 @@ def run_full(cases, ask, judge=True):
         rows.append({"case": case["description"], "split": case["vars"].get("split", "dev"),
                      "source": case["vars"].get("source", ""), "hard": hard_failures(case["vars"], result),
                      "advisory": advisory_warnings(case["vars"], result), "judge": verdict,
-                     "judge_reason": reason, "cited": result.get("cited", [])})
+                     "judge_reason": reason, "cited": result.get("cited", []),
+                     "question": case["vars"]["question"], "reference": case["vars"].get("reference", ""),
+                     "answer": result.get("text", "")})
     return rows
 
 
@@ -65,6 +75,10 @@ def app_ask(question):
 
 def failed(row):
     return bool(row["hard"]) or (judge_is_hard() and row["judge"] in ("fail", "unparsed"))
+
+
+def pass_rate(rows):
+    return sum(not failed(r) for r in rows) / len(rows) if rows else 0.0
 
 
 def prompt_in_use():
@@ -79,8 +93,12 @@ def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def record(rows):
-    """The run record: what ran, on which prompt, and what passed. --save writes it to evals/runs/."""
+def record(rows, bar=1.0):
+    """The run record: what ran, on which prompt, and what passed. --save writes it to evals/runs/.
+
+    "passed" means the pass rate is at or above the bar. "cases_detail" keeps every case's question,
+    reference answer and the model's answer, so you can hand label rows from a real run (Stage 8).
+    """
     now = datetime.now(timezone.utc)
     prompt = prompt_in_use()
     digest = sha256(prompt) if prompt and prompt.exists() else ""
@@ -98,8 +116,13 @@ def record(rows):
             "prompt_file": prompt.relative_to(ROOT).as_posix() if prompt else None, "prompt_sha256": digest,
             "judge_hard": judge_is_hard(), "cases": len(rows), "hard_failures": sum(bool(r["hard"]) for r in rows),
             "judge_failures": sum(r["judge"] in ("fail", "unparsed") for r in rows),
-            "passed": not any(failed(r) for r in rows), "by_split": by_split,
-            "failed_cases": {r["case"]: r["hard"] for r in rows if r["hard"]}}
+            "pass_rate": round(pass_rate(rows), 4), "bar": bar, "passed": bool(rows) and pass_rate(rows) >= bar,
+            "by_split": by_split, "failed_cases": {r["case"]: r["hard"] for r in rows if r["hard"]},
+            "cases_detail": [{"case": r["case"], "split": r["split"], "question": r.get("question", ""),
+                              "reference": r.get("reference", ""), "answer": r.get("answer", ""),
+                              "cited": r["cited"], "hard": r["hard"], "advisory": r["advisory"],
+                              "judge": r["judge"], "judge_reason": r["judge_reason"], "label": ""}
+                             for r in rows]}
 
 
 def check_prompts(prompts=PROMPTS, runs=RUNS):
@@ -114,6 +137,10 @@ def check_prompts(prompts=PROMPTS, runs=RUNS):
         rec = runs / f"{run_id}.json"
         if not run_id:
             problems.append(f"{p.name}: no row in prompts/APPROVALS.md")
+        elif run_id == KIT_BASELINE:
+            if KIT_BASELINE_PROMPTS.get(p.name) != sha256(p):
+                problems.append(f"{p.name}: the {KIT_BASELINE} row only approves the kit's own unchanged prompt "
+                                f"text. Run python evals/run_evals.py --save and approve that run")
         elif not rec.exists():
             problems.append(f"{p.name}: eval run {run_id} has no file in evals/runs/")
         else:
@@ -130,7 +157,11 @@ def main(argv=None):
     ap.add_argument("--split", choices=SPLITS)
     ap.add_argument("--save", action="store_true", help="write the run record to evals/runs/<run id>.json")
     ap.add_argument("--check-prompts", action="store_true", help="also check prompts/APPROVALS.md")
+    ap.add_argument("--bar", type=float, default=1.0,
+                    help="pass when this share of cases (0 to 1) passes the hard gates, like 0.85. Default 1.0")
     args = ap.parse_args(argv)
+    if not 0 <= args.bar <= 1:
+        ap.error("--bar must be between 0 and 1")
 
     cases = [c for c in load_cases() if not args.split or c["vars"].get("split", "dev") == args.split]
     rows = run_full(cases, app_ask)
@@ -146,8 +177,9 @@ def main(argv=None):
     hard = sum(bool(r["hard"]) for r in rows)
     print(f"\nHard gates: {len(rows) - hard}/{len(rows)} passed. Advisory warnings: {sum(bool(r['advisory']) for r in rows)}."
           f" Judge: {'hard' if judge_is_hard() else 'advisory'} (set JUDGE_HARD=1 to make it block).")
-    rec = record(rows)
-    print("Run id:", rec["run_id"], "| prompt:", rec["prompt_file"], "| passed:", rec["passed"])
+    rec = record(rows, args.bar)
+    print(f"Pass rate {rec['pass_rate']:.0%}, bar {args.bar:.0%}.",
+          "Run id:", rec["run_id"], "| prompt:", rec["prompt_file"], "| passed:", rec["passed"])
     if args.save:
         RUNS.mkdir(parents=True, exist_ok=True)
         (RUNS / f"{rec['run_id']}.json").write_text(json.dumps(rec, indent=1) + "\n")

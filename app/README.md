@@ -12,7 +12,6 @@ Two ways to serve the same `answer()` function:
 ## Run locally
 
 ```
-python corpus/make_corpus.py      # once, makes the help pages
 streamlit run app/app.py
 ```
 
@@ -42,6 +41,9 @@ with `"fallback": "spend_guard"`. One acceptance run uses 15 or more calls, so k
 
 1. Push your fork to GitHub (the corpus files must be committed so the app can read them).
 2. On share.streamlit.io, click **Create app**, pick your fork, branch `main`, file `app/app.py`.
+   Streamlit Cloud installs the requirements file next to the main file first. That is why
+   `app/requirements.txt` exists. It holds only what `app/app.py` needs, so the build skips PyTorch
+   and is fast. If you add an import to the app, add the package there too.
 3. Open **Advanced settings**, then **Secrets**, and paste:
 
    ```
@@ -68,6 +70,12 @@ with `"fallback": "spend_guard"`. One acceptance run uses 15 or more calls, so k
    (or copy them in with the web editor). The Space must contain `app/`, `kit/`, `mcp_server/`, `corpus/` and `prompts/`.
 3. In the Space **Settings**, add a secret `GEMINI_API_KEY`.
 4. The URL looks like `https://YOUR-NAME-YOUR-SPACE.hf.space`. Use it with `--url` as above.
+
+## Tools with a host allowlist (Stage 13)
+
+`app/tools.py` has `fetch_url(url)`, a tool handler wrapped by `HostAllowlist(...).guard(...)` from
+`kit/guardrails.py`. A URL whose host is not in `ALLOWED_HOSTS` never reaches the fetch. The blocked call is
+logged to `stage-13/blocked_calls.jsonl`. Give your agent this handler, not a raw fetch.
 
 ## Set a spend cap at the provider
 

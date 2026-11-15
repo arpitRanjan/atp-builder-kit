@@ -8,7 +8,7 @@ For a private Hugging Face Space, set ACCEPTANCE_TOKEN to an access token; it is
 --out saves the same report, with the URL, date, model and ship bar at the top.
 Exit code 0 when the pass rate meets the bar, 1 when it does not. Add KIT_OFFLINE=1 for the mock model.
 
-Case fields (all optional except id and question):
+Case fields (all optional except question; a case with no id is named case-01, case-02 ...):
   kind              normal, edge or failure (counted in the summary)
   cite_any          pass only if the reply cites at least one of these page ids
   never_cite        fail if the reply cites any of these page ids
@@ -74,13 +74,13 @@ def check(case, reply):
 
 def run(cases, ask):
     rows = []
-    for case in cases:
+    for n, case in enumerate(cases, 1):
         try:
             reply = ask(case["question"])
             reasons = check(case, reply)
         except Exception as e:  # a crash or a bad reply counts as a failed case, not a crashed run
             reply, reasons = {}, [f"error: {type(e).__name__}: {e}"]
-        rows.append({"id": case["id"], "kind": case.get("kind", "normal"), "passed": not reasons,
+        rows.append({"id": case.get("id", f"case-{n:02d}"), "kind": case.get("kind", "normal"), "passed": not reasons,
                      "reasons": reasons, "model": reply.get("model")})
     return rows
 
