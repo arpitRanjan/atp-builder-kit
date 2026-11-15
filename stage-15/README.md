@@ -1,43 +1,36 @@
-# Stage 15: the take-home, the system design answer, and a portfolio-ready repo
+# Stage 15: take-home, system design, portfolio (example)
 
-This stage has no notebook. You ship one small feature behind your eval gate, record a system design answer,
-and make the repo readable for a hiring manager.
+Example skeleton. Every `<...>` is the learner's own work: the PR, the live URL, the recording and its numbers.
 
-## Checklist: what the grader looks for
+- Pull request: `<PR link>`
+- Live URL: `<your live URL>`
+- Recording (a 25 to 35 minute system design walkthrough): `<recording link>`
+- Take-home: [TAKEHOME.md](TAKEHOME.md)
+- Portfolio README: the root [README.md](../README.md), started from `templates/PORTFOLIO_README.md`
 
-| Item | What it is | Start from |
-| --- | --- | --- |
-| `stage-15/TAKEHOME.md` | the small feature, the exact repo area you changed, the eval gate, the ship or no ship call, the PR link | `templates/TAKEHOME.md` |
-| A pull request in your repo | your visible commits, a short description, and at least one number from a real run (pass rate, success count or failure count) copied from the CI run or `make evals` output, not typed by hand | your branch |
-| `stage-15/README.md` | four short sections (below), plus the PR link, the live URL, the recording link, and timestamps or a chapter list | this file (replace this checklist) |
-| A 25 to 35 minute recording | your system design answer (below) | you |
-| Root `README.md` | what it does, who it is for, the live URL, how quality is checked, current limits, where the take-home and recording are | `templates/PORTFOLIO_README.md` |
-| A green CI run | a status badge or a link to a passing run on the branch you submit | your `.github/workflows/evals.yml` |
+## Decisions I made
 
-## Your stage-15/README.md
+- Picked the admin page leak (stage 14 known failure 1) because it is the one failure with a safety cost.
+- Fixed it in the app's search, not in the prompt, so the model never sees an admin page.
+- `<more>`
 
-Use these four headings:
+## What I measured
 
-1. **Decisions I made**
-2. **What I measured**
-3. **What the results mean**
-4. **What I would do next**
+- Hard gates before and after, from the CI runs: `<numbers and links>`
+- Admin pages cited across the golden and Spanish sets: `<before> to <after>`
 
-Then add:
+## What the results mean
 
-- Pull request: <PR link>
-- Live URL: <your live URL>
-- Recording: <recording link>
-- Chapters: one line per chapter, for example `00:00 the product`, `04:30 drill-down 1: retrieval`, `12:00 drill-down 2: eval design`, `20:00 drill-down 3: approval flow`, `28:00 limits and next`
+`<two or three sentences: did it meet the gate, and what it does not fix>`
 
-## The recording
+## What I would do next
 
-25 to 35 minutes. Explain the product end to end: user, data, retrieval, model, guardrails, evals, CI, deployment.
-Then three drill-downs on choices someone can see in the repo, such as retrieval, eval design, approval flow, CI,
-deployment, prompt design or action safety. Show the file while you talk about it. Upload it anywhere with a
-shareable link (YouTube unlisted, Loom, Google Drive).
+`<one thing>`
 
-## Submit
+## Recording chapters
 
-The GitHub repo link, the live URL, and the recording link. The submit box has no "Recording" link type: add the
-recording as a second **Live** link. It is also in `stage-15/README.md`.
+- `00:00` the product end to end: user, pages, retrieval, model, guardrails, evals, CI, deployment
+- `<mm:ss>` drill-down 1: `<for example retrieval and the role filter, app/app.py and kit/rag.py>`
+- `<mm:ss>` drill-down 2: `<for example eval design, evals/ and the CI workflow>`
+- `<mm:ss>` drill-down 3: `<for example approval flow and the host allowlist, kit/guardrails.py>`
+- `<mm:ss>` limits and what is next
