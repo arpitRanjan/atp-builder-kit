@@ -2,7 +2,10 @@
 # Run from the repo root (needs Node 20 or later):
 #   npx promptfoo@0.125.1 eval -c evals/promptfooconfig.yaml
 # Set PROMPTFOO_PYTHON to your Python (for example .venv/bin/python) if promptfoo picks the wrong one.
-# Hard gate: a failure fails the test and the run. Advisory gate: always passes, its score and reason are a note.
+# Two code graders (citation, content) are hard: a failure fails the test and the run.
+# The model judge is advisory until you set JUDGE_HARD=1 (after notebooks/08_judge_calibration.ipynb).
+# The advisory gate always passes; its score and reason are a note.
+# Each case in golden.jsonl carries its split (dev, held-out, regression) and its source as vars.
 description: Quillnote help assistant, golden set
 prompts:
   - "{{question}}"
@@ -13,8 +16,14 @@ tests: file://golden.jsonl
 defaultTest:
   assert:
     - type: python
-      value: file://gates.py:hard_gate
-      metric: hard
+      value: file://gates.py:citation_gate
+      metric: citation
+    - type: python
+      value: file://gates.py:content_gate
+      metric: content
+    - type: python
+      value: file://gates.py:judge_gate
+      metric: judge
     - type: python
       value: file://gates.py:advisory_gate
       metric: advisory

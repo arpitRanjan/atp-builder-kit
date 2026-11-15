@@ -17,7 +17,6 @@ def test_northwind_pages_and_template():
     pages = parse_corpus(NW / "pages")
     assert len(pages) == 10 and {p["visibility"] for p in pages} == {"student", "tutor", "admin"}
     assert "Northwind Learning" in (NW / "BRIEF.md").read_text()
-    assert (NW / "field_log.csv").read_text().strip() == "date,issue,workaround,decision,note"
     ids = {p["id"] for p in pages}
     for q in map(json.loads, open(NW / "questions.jsonl")):
         assert q["role"] in NW_ACCESS and set(q["page_ids"]) <= ids

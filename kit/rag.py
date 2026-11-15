@@ -176,3 +176,37 @@ def rerank(reranker, query, hits, k=5):
     scores = reranker.score(query, [c["text"] for c, _ in hits])
     order = sorted(range(len(hits)), key=lambda i: -scores[i])
     return [(hits[i][0], scores[i]) for i in order[:k]]
+
+
+# ---------- the retrieval answer path (Stage 9): one search function, answers that cite chunk ids ----------
+ANSWER_SYSTEM = ("Answer using only the numbered sources. Cite the source ids you used in square brackets, "
+                 "like [qn-02#0]. If the sources do not answer the question, say so.")
+STRATEGIES = ("vector", "hybrid", "hybrid_rerank")
+
+
+def make_search(chunks, strategy="hybrid_rerank", embedder=None, reranker=None):
+    """Returns search(query, k, role) for one strategy. Every strategy filters by role at query time."""
+    vector = VectorIndex(chunks, embedder or get_embedder())
+    if strategy == "vector":
+        return vector.search
+    keyword = BM25Index(chunks)
+
+    def hybrid(query, k=5, role=None):
+        return rrf([vector.search(query, 20, role), keyword.search(query, 20, role)], k)
+    if strategy == "hybrid":
+        return hybrid
+    ranker = reranker or get_reranker()
+    return lambda query, k=5, role=None: rerank(ranker, query, hybrid(query, 20, role), k)
+
+
+def answer_with_citations(question, search, role=None, k=3, **llm_args):
+    """Retrieve for this user's role, answer from those chunks only, and keep the chunk ids it cites."""
+    from kit.llm import call_llm
+    hits = search(question, k, role)
+    sources = "\n".join(f"[{c['id']}] {c['text']}" for c, _ in hits)
+    r = call_llm(f"Sources:\n{sources}\n\nQuestion: {question}", system=ANSWER_SYSTEM, max_output_tokens=1000,
+                 **llm_args)
+    ids = {c["id"] for c, _ in hits}
+    cited = [i for i in dict.fromkeys(re.findall(r"qn-\d+#\d+", r["text"])) if i in ids]
+    return {"question": question, "role": role, "text": r["text"], "retrieved": [c["id"] for c, _ in hits],
+            "cited_chunks": cited, "cited_pages": sorted({i.split("#")[0] for i in cited}), "call": r}

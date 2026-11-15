@@ -19,6 +19,16 @@ python mcp_server/server.py
 
 It talks MCP over stdio, so it waits silently for a client. Stop it with Ctrl+C.
 
+## Print its facts for stage-03/MCP.md
+
+```
+python mcp_server/describe.py
+```
+
+It asks the server for its tool list (the same call MCP Inspector makes) and prints the pinned `mcp`
+version, each tool's description, inputs and hints. To rewrite the tool description, edit the
+`description=` text in `server.py`, run `describe.py` again, and keep the old and new text in `MCP.md`.
+
 ## Test it with the MCP Inspector
 
 The official Inspector needs Node.js:
@@ -28,6 +38,7 @@ npx @modelcontextprotocol/inspector python mcp_server/server.py
 ```
 
 Open the link it prints, click **Connect**, then **Tools**, **List Tools**, pick `search_docs` and run it.
+Write the date you did this in `stage-03/MCP.md`.
 
 ## Optional: use it from Claude Desktop
 

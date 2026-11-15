@@ -1,0 +1,9 @@
+# Small install for deploying app/api.py on a free host (Render or Hugging Face Spaces).
+# It skips the notebook and embedding packages in the root requirements.txt, so the build is fast.
+fastapi==0.163.1
+uvicorn==0.54.0
+pydantic==2.14.3
+google-genai==3.3.0
+openai==3.51.0
+requests==2.34.2
+mcp==2.3.0

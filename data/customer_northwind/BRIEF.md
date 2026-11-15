@@ -38,5 +38,6 @@ Tutor pay and admin procedures must never reach a student. Safeguarding pages ar
 
 ## Field log
 
-Write every gap you find in `field_log.csv` (date, issue, workaround, decision, note). The decision is
-one of `configure` (change settings or content), `build` (a product change) or `drop` (not worth it).
+Write every configuration choice, issue and workaround in `stage-11/field-log.csv` (date, item, issue, workaround,
+decision, role_or_surface, note). The decision is one of `configure` (change settings or content), `build` (a product
+change) or `drop` (not worth it). Use the same `item` text for rows about the same thing, so recurring items show up.

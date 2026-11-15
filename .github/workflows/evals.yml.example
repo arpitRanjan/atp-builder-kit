@@ -1,7 +1,9 @@
-# Template. Rename this file to evals.yml to run the golden set on every pull request.
+# Template. Rename this file to evals.yml to run the eval gate on every pull request.
 # It ends in .example in the kit so the kit's own CI never runs it.
 # Add GEMINI_API_KEY (or the three FALLBACK_ values) as repository secrets to run it live.
 # With no key it runs with the offline mock model, which only proves the wiring works.
+# Any failing step fails the check, and branch protection (Settings > Branches > require status checks)
+# then blocks the merge until it is fixed.
 name: evals
 
 on:
@@ -16,6 +18,9 @@ jobs:
       FALLBACK_API_KEY: ${{ secrets.FALLBACK_API_KEY }}
       FALLBACK_MODEL: ${{ secrets.FALLBACK_MODEL }}
       PROMPTFOO_DISABLE_TELEMETRY: "1"
+      # Retrieval in CI uses the kit's small stand-in embedder and reranker (no 3 GB PyTorch install).
+      # Remove this line and install torch and sentence-transformers to test the real models.
+      KIT_EMBEDDER: hash
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -24,11 +29,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      # The app needs only these; the full requirements.txt also pulls in PyTorch.
-      - run: pip install google-genai==3.3.0 openai==3.51.0 mcp==2.3.0 requests==2.34.2
+      # The app and the evals need only these; the full requirements.txt also pulls in PyTorch.
+      - run: pip install google-genai==3.3.0 openai==3.51.0 mcp==2.3.0 requests==2.34.2 numpy==2.4.6 rank_bm25==0.2.2
       - name: Use the mock model when no key is set
         if: env.GEMINI_API_KEY == '' && env.FALLBACK_API_KEY == ''
         run: echo "KIT_OFFLINE=1" >> "$GITHUB_ENV"
+      - name: Golden set, pytest version (code graders, model judge, regression set, prompt approvals)
+        run: python evals/run_evals.py --save --check-prompts
+      - name: Spanish golden set (Stage 12; remove this step until you reach Stage 12)
+        run: python stage-12/locale_evals.py --bar 0.8 --out stage-12/results/ci-results.json
+      - name: Retrieval eval and the two user leak test (Stage 9)
+        run: python evals/retrieval_check.py --out retrieval-results
       - name: Golden set with promptfoo (a hard gate failure fails this job)
         env:
           PROMPTFOO_PYTHON: python
@@ -37,5 +48,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: promptfoo-results
-          path: promptfoo-results.json
+          name: eval-results
+          path: |
+            promptfoo-results.json
+            evals/runs/
+            retrieval-results/
+            stage-12/results/

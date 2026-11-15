@@ -1,65 +1,66 @@
-# Handover: <your app name>
+# Handoff: <your app name>
 
-Fill in every `<...>`. The reader is an engineer or a forward deployed engineer who has never seen this
-project. They should be able to run everything below cold, in under 30 minutes, without asking you.
+Copy this file to `stage-14/README.md` and fill in every `<...>`. The reader has never seen this project.
+They should be able to run everything below cold, in under 30 minutes, without asking you.
 
-## 1. What it does, in two sentences
+The handoff bundle in `stage-14/`:
+
+| File | What it is | Start from |
+| --- | --- | --- |
+| `README.md` | this file: what it does, run steps, expected results, decisions | `templates/HANDOFF.md` |
+| `SPEC.md` | the current spec with its production boundary | `templates/SPEC.md` (or your `stage-05/PRD.md`) |
+| `traces/spans.jsonl` | at least one trace export | `python stage-14/trace_failures.py` |
+| `known-failures.md` | 3 or more current failures, each with user impact and a trace link | `templates/KNOWN_FAILURES.md` |
+| `peer-run-notes.md` | notes from one peer who ran the repo cold | `templates/PEER_RUN_NOTES.md` |
+| `evals-run.txt` | the raw output of `make evals` | the command below |
+
+## What it does, in two sentences
 
 <Who uses it, what they ask, what it answers from, and what it may do (tools).>
 
-## 2. Run it cold
+## Fresh clone setup and run steps
 
 ```
 git clone <your fork URL> && cd atp-builder-kit
 python3.11 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env          # then fill in a key, or skip it and use KIT_OFFLINE=1
-make test                     # the offline tests, about a minute
-make evals                    # the golden set in one command; exit 1 means a hard gate failed
-make traces                   # 20 traced requests -> traces/spans.jsonl and traces/spans.csv
+cp .env.example .env                      # fill in a key, or skip it and put KIT_OFFLINE=1 in front of each command
+make test PYTHON=.venv/bin/python          # the offline tests
+make evals                                 # the golden set in one command
+make evals 2>&1 | tee stage-14/evals-run.txt   # the same, with the raw output saved
+python stage-14/trace_failures.py          # traces every golden case to stage-14/traces/
 ```
 
-Expected results on <date>, with <provider and model>:
+## Where the results are
 
-| Check | Result | Bar |
+- `make evals` prints one line per case and a total, and exits 1 if a hard gate fails. Raw output: `stage-14/evals-run.txt`.
+- Traces: `stage-14/traces/spans.jsonl` (one JSON line per span) and `stage-14/traces/failing-cases.csv` (failing case to trace id).
+
+## Expected outcome when the repo is working
+
+<What the terminal shows, for example: "Hard gates: 17/20 passed", exit code 1 because of the 3 known failures in
+known-failures.md. What the app shows: `streamlit run app/app.py` opens a help box that answers with cited page ids.>
+
+| Check | Result on <date>, <provider and model> | Bar |
 | --- | --- | --- |
 | `make evals` hard gates | <17 of 20> | <18 of 20> |
 | p95 latency (from `make traces`) | <ms> | <ms> |
-| Cost per successful task | <$> | <$> |
-| Red team pass^3 (`13_injection_and_redteam`) | <0.83> | <1.00> |
+| Red team pass^3 (stage 13) | <1.00> | <1.00> |
 
-## 3. How it fits together
+## How it fits together
 
-<One paragraph: question -> retrieval (with the role filter) -> model -> output check -> answer. Name the files.>
+<One paragraph: question, retrieval with the role filter, model, output check, answer. Name the files.>
 
-| Part | File | Notes |
-| --- | --- | --- |
-| Answer function | `app/app.py` | <what you changed> |
-| Retrieval and roles | `kit/rag.py` | <chunk size, k, the access map> |
-| Guardrails | `kit/guardrails.py` | <rate limit, spend cap, allowlist hosts> |
-| Evals | `evals/` | golden set, regression cases, gates |
-| Spans | `kit/tracing.py` | one JSON line per span |
+| Part | File |
+| --- | --- |
+| Answer function | `app/app.py` |
+| Retrieval and roles | `kit/rag.py` |
+| Guardrails | `kit/guardrails.py` |
+| Evals | `evals/` |
+| Spans | `kit/tracing.py` |
 
-## 4. Limits that are switched on
+## Decisions, what I measured, and next
 
-- Rate limit: <n> requests per user per <seconds>.
-- Spend cap: <$ per day>, where it is set: <file or env var>.
-- Tools that can act outside the app: <list>. Each one needs: <approval rule>.
-- Host allowlist: <hosts>. It is checked in the tool handler, not at the network level.
-
-## 5. Known issues and decisions
-
-The field log is the source: `<path to field_log.csv>`. The three that matter most:
-
-| Issue | Decision (configure, build, drop) | Why |
-| --- | --- | --- |
-| <...> | <...> | <...> |
-
-## 6. What to watch in the first week
-
-- <the span or metric that drives spend, and the alert level>
-- <the eval case that fails first when the model changes>
-
-## 7. Who to ask
-
-<Name, role, how to reach them, and until when.>
+- Handoff choices I made: <for example: one command for evals, traces per golden case, known failures linked to traces>
+- What I measured: <from the real eval run (pass count) and the peer run (time to green, questions asked)>
+- The single next improvement to the handoff: <one thing>

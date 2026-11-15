@@ -47,8 +47,8 @@ def test_tracing_notebook_writes_every_span_kind(tmp_path):
 def test_customer_notebook_fills_the_field_log(tmp_path):
     run_notebook(ROOT / "notebooks" / "11_customer_deployment.ipynb", tmp_path)
     import csv
-    rows = list(csv.DictReader(open(tmp_path / "field_log.csv")))
-    assert rows and list(rows[0]) == ["date", "issue", "workaround", "decision", "note"]
+    rows = list(csv.DictReader(open(tmp_path / "field-log.csv")))
+    assert rows and list(rows[0]) == ["date", "item", "issue", "workaround", "decision", "role_or_surface", "note"]
     assert {r["decision"] for r in rows} <= {"configure", "build", "drop"}
 
 

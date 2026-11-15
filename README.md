@@ -8,27 +8,27 @@ tests so you can spend your time on product decisions, not setup.
 
 Chapters 1 and 2 need no GitHub account: open the notebooks straight from the links in section 3, run them in Colab, and save your copy to your Google Drive (File, then Save a copy in Drive).
 
-In Chapter 3 you fork the kit: click **Fork** on GitHub, and your copy lives at `https://github.com/<you>/atp-builder-kit`. Move your Chapter 1 and 2 notebooks into its `stage-01/` and `stage-02/` folders. From then on, change `arpitRanjan` to your GitHub name in `REPO_URL` in each notebook's first cell, so Colab opens your copy.
+In Chapter 3 you fork the kit: click **Fork** on GitHub, and your copy lives at `https://github.com/<you>/atp-builder-kit`. Move your Chapter 1 and 2 notebooks (and `probe_runs.csv` and `probe_summary.csv`) into its `stage-01/` and `stage-02/` folders. From then on, change `arpitRanjan` to your GitHub name in `REPO_URL` in each notebook's first cell, so Colab opens your copy.
 
 ## 2. One folder per stage
 
 | Folder | What you put there |
 | --- | --- |
-| `stage-01/` | your runs of the two `01` notebooks; predictions and README at the end of the probe set |
-| `stage-02/` | your runs of the two `02` notebooks, plus `failure_backlog.csv` |
-| `stage-03/` | `CODEMAP.md`, `prompts/`, your MCP tool, `DEPLOYED.md` |
-| `stage-04/` | your run of `04_baseline_vs_llm`, `baseline_vs_llm.csv`, `ASSUMPTION.md` |
-| `stage-05/` | your `acceptance.jsonl`, `SHIP_BAR.md`, the `scripts/acceptance.py` output |
-| `stage-06/` | your runs of the four `06` notebooks, `traces/run.jsonl`, `outbox.jsonl` |
-| `stage-07/` | `APPROVAL.md`, `LOG_FIELDS.md`, `feedback.jsonl` (no notebook: builds on `06_harness`) |
-| `stage-08/` | your run of `08_judge_calibration`, `labels.csv`, your golden set and `evals.yml` |
-| `stage-09/` | your runs of the three `09` notebooks, `RETRIEVAL.md` |
-| `stage-10/` | your runs of the three `10` notebooks, `traces/spans.jsonl`, `ab_threshold.json`, `ab_readout.md` |
-| `stage-11/` | your run of `11_customer_deployment`, `field_log.csv`, `DEPLOYMENT.md` |
-| `stage-12/` | your run of `12_locale_eval`, `LOCALE.md` |
-| `stage-13/` | your runs of the two `13` notebooks, `blocked_calls.jsonl`, `redteam_runs.csv` |
-| `stage-14/` | `HANDOFF.md` (from `templates/`), the `make evals` and `make traces` output (no notebook) |
-| `stage-15/` | `TAKEHOME.md` (from `templates/`) and `SOLUTION.md` (no notebook) |
+| `stage-01/` | two notebook links: `01_first_calls` (10 calls, usage table with a forced truncation) and `01_probe_set` (10 probes x 5 runs x 2 models, predictions, README cell); keep `probe_runs.csv` and `probe_summary.csv` |
+| `stage-02/` | both `02` notebooks, `labeled_random_30.csv`, `labeled_stratified_30.csv`, `failure_backlog.csv` (with your Stage 1 probe failures), README with the retention table |
+| `stage-03/` | README, `CODEMAP.md`, `DEBUG.md`, `MCP.md`, `PRS.md`, `DEPLOYED.md`, `evals/` with the 50 run re-test (`scripts/retest.py`); prompts live in the root `prompts/` |
+| `stage-04/` | your `04_baseline_vs_llm` run, `llm_results.csv`, `baseline_results.csv`, `comparison.md`, `stack_choice.md`, README strategy note |
+| `stage-05/` | `PRD.md`, `evals/acceptance.jsonl`, `acceptance-run.txt` (`scripts/acceptance.py --url` against your deployed `app/api.py`), README, a named fallback in `app/app.py` |
+| `stage-06/` | your runs of `06_harness` and `06_context_ablation`, `traces/run.jsonl`, `pass_rates.csv`, `failed_run.md`, `context_ablation.csv`, `compaction_check.csv` |
+| `stage-07/` | `oversight_app.py` (approval, claim citations, refusal, feedback), `approvals.jsonl`, `feedback.jsonl`, the usability test in README |
+| `stage-08/` | notes only; the eval build lives in `evals/`, `prompts/APPROVALS.md`, `notebooks/08_judge_calibration.ipynb`, `.github/workflows/evals.yml` |
+| `stage-09/` | your runs of the three `09` notebooks, `rag_answers.jsonl`, `baseline_vs_retrieval.csv`, `retrieval_strategies.csv`, `retrieval_summary.json`, `stale_window.json` |
+| `stage-10/` | your runs of the three `10` notebooks, `traces/spans.jsonl`, `tracing_summary.json`, `cost_lever.csv`, `metric-tree.md`, `ab_readout.md` |
+| `stage-11/` | your run in `notebooks/`, `leak-test/`, `field-log.csv`, `audit-log.jsonl`, `change-evidence.csv`, `procurement-pack.md` |
+| `stage-12/` | your run of `12_locale_eval`, `golden-set.jsonl`, `outputs.jsonl`, `judge-prompt.md`, `judge-agreement.md`, `results/ci-results.json` (run by `locale_evals.py` in CI) |
+| `stage-13/` | your runs of the two `13` notebooks, `guardrail-summary.json`, `blocked_calls.jsonl`, `injection-runs.csv`, `redteam-outcomes.csv`, `fallback.json`, `authority-table.md` |
+| `stage-14/` | README (from `templates/HANDOFF.md`), `SPEC.md`, `traces/`, `known-failures.md`, `peer-run-notes.md`, `evals-run.txt` (no notebook) |
+| `stage-15/` | `TAKEHOME.md` (from `templates/`), README with the PR, live URL and recording links; root README from `templates/PORTFOLIO_README.md` (no notebook) |
 
 Skipped a stage? Each `checkpoint/stage-NN` branch (01 to 15) has an example finished stage you can continue from:
 `git checkout checkpoint/stage-01`. Those examples were made with the offline mock model.
@@ -111,16 +111,24 @@ notebooks/            one or more notebooks per chapter (see section 3)
 scripts/call_model.py the same call with plain HTTP, to read raw JSON and tracebacks
 corpus/make_corpus.py writes the Quillnote help pages (Quillnote is an invented app)
 mcp_server/server.py  an MCP server with one read-only tool, search_docs
-app/app.py            a small Streamlit help assistant
+app/app.py            a small Streamlit help assistant, prompt from prompts/, named fallbacks
+app/api.py            the same assistant as POST /ask, so scripts/acceptance.py can test your live URL
+prompts/              versioned system prompts (help_v1.md ...) and APPROVALS.md
+scripts/retest.py     the Stage 3 re-test: 10 inputs x 5 runs
+kit/approval.py       approval payloads, approve/edit/reject log, claim citations, refusal and empty states
+kit/feedback.py       thumbs-down and edit feedback as eval rows
+stage-07/oversight_app.py  a Streamlit app with the approval screen and feedback (Stage 7)
 kit/rag.py            parse, chunk, embed, index, BM25, fusion and rerank, for the 09 notebooks
 kit/mock_brain.py     the offline mock's keyword rules for the Chapter 4 to 13 notebooks
 kit/tracing.py        spans around the app's answer function (traces/spans.jsonl), percentiles, cost per task
 kit/guardrails.py     input and output checks, refusal, rate limit, spend cap, host allowlist for tool handlers
-scripts/acceptance.py acceptance cases (evals/acceptance.jsonl) against a ship bar: --bar 0.8 [--url URL]
-evals/                labels.csv (judge calibration), golden.jsonl, gates.py, promptfooconfig.yaml, run_evals.py
+scripts/acceptance.py acceptance cases (evals/acceptance.jsonl) against a ship bar: --bar 0.8 [--url URL] [--out FILE]
+evals/                labels.csv (judge calibration), golden.jsonl (dev, held-out, regression), gates.py, promptfooconfig.yaml, run_evals.py
+evals/retrieval_check.py  recall at k, citation faithfulness and the two user leak test (retrieval_questions.jsonl), for CI
+stage-12/locale_evals.py  the Spanish golden set as a CI check
 evals/ (wave 3)       golden_es.jsonl and labels_es.csv (Spanish), guardrail_probes.jsonl, regression.jsonl (red team)
-data/customer_northwind/  a SIMULATED second customer (Northwind Learning, invented): brief, 10 pages, field log template
-templates/            HANDOFF.md (the handover bundle) and TAKEHOME.md (a take-home brief)
+data/customer_northwind/  a SIMULATED second customer (Northwind Learning, invented): brief, 10 pages, questions per role
+templates/            HANDOFF.md, SPEC.md, KNOWN_FAILURES.md, PEER_RUN_NOTES.md (Stage 14), TAKEHOME.md and PORTFOLIO_README.md (Stage 15), PROCUREMENT_PACK.md (Stage 11)
 Makefile              make evals (the eval suite in one command), make traces (20 traced requests, span export)
 .github/workflows/evals.yml.example  rename to evals.yml to run the golden set on every pull request
 tests/                pytest, all offline

@@ -1,15 +1,15 @@
-{"id": "a01", "question": "How do I export a note as PDF?", "cite_any": ["qn-02"]}
-{"id": "a02", "question": "How do I get back a note I deleted?", "cite_any": ["qn-07"]}
-{"id": "a03", "question": "How do I fix sync?", "cite_any": ["qn-05"]}
-{"id": "a04", "question": "How do I switch to dark mode?", "cite_any": ["qn-06"]}
-{"id": "a05", "question": "What plans are there?", "cite_any": ["qn-09"]}
-{"id": "a06", "question": "How do I share a notebook?", "cite_any": ["qn-10"]}
-{"id": "a07", "question": "What team roles exist?", "cite_any": ["qn-11"]}
-{"id": "a08", "question": "How do shared team templates work?", "cite_any": ["qn-12"]}
-{"id": "a09", "question": "How do I use tags and folders?", "cite_any": ["qn-03"]}
-{"id": "a10", "question": "How do I search notes by keyword?", "cite_any": ["qn-04"]}
-{"id": "a11", "question": "Does Quillnote work offline?", "cite_any": ["qn-08"]}
-{"id": "a12", "question": "How do I create a new note?", "cite_any": ["qn-01"]}
-{"id": "a13", "question": "How do I change the theme?", "cite_any": ["qn-06"], "never_cite": ["qn-13", "qn-14", "qn-15"]}
-{"id": "a14", "question": "How do I upgrade my plan?", "cite_any": ["qn-09"], "never_cite": ["qn-13", "qn-14", "qn-15"]}
-{"id": "a15", "question": "Can I restore a note from Trash?", "cite_any": ["qn-07"], "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "a01", "kind": "normal", "question": "How do I export a note as PDF?", "cite_any": ["qn-02"]}
+{"id": "a02", "kind": "normal", "question": "How do I get back a note I deleted?", "cite_any": ["qn-07"]}
+{"id": "a03", "kind": "normal", "question": "How do I fix sync?", "cite_any": ["qn-05"]}
+{"id": "a04", "kind": "normal", "question": "How do I switch to dark mode?", "cite_any": ["qn-06"]}
+{"id": "a05", "kind": "normal", "question": "What plans are there?", "cite_any": ["qn-09"]}
+{"id": "a06", "kind": "normal", "question": "How do I share a notebook?", "cite_any": ["qn-10"]}
+{"id": "a07", "kind": "normal", "question": "What team roles exist?", "cite_any": ["qn-11"]}
+{"id": "a08", "kind": "normal", "question": "How do I search notes by keyword?", "cite_any": ["qn-04"]}
+{"id": "a09", "kind": "normal", "question": "Does Quillnote work offline?", "cite_any": ["qn-08"]}
+{"id": "a10", "kind": "edge", "question": "how do i exprot a note as pdf", "cite_any": ["qn-02"]}
+{"id": "a11", "kind": "edge", "question": "PDF", "cite_any": ["qn-02"]}
+{"id": "a12", "kind": "edge", "question": "Can I restore a note from Trash? I deleted it by mistake yesterday and I need it back for a meeting today.", "cite_any": ["qn-07"], "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "a13", "kind": "edge", "question": "How do I upgrade my plan?", "cite_any": ["qn-09"], "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "a14", "kind": "failure", "question": "I was charged twice, can you refund me?", "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "a15", "kind": "failure", "question": "zzzz qqqq", "expect_fallback": "no_page", "must_contain_any": ["support"]}
