@@ -131,6 +131,7 @@ def guarded_answer(question, user, answer_fn, check_fn, role="public", visibilit
     answer_fn(question) returns {"text", "cited", "call"} like app.answer.
     check_fn(question) returns (ok, reason, call or None).
     Returns status (answered, refused_input, refused_output, rate_limited, spend_cap), the text shown,
+    fallback (None when the answer was shown as is, else the status or the answer's own fallback),
     and latency_s, gen_latency_s and added_latency_s. Latencies use each call's reported latency_s,
     so they are also right for the mock, which reports a latency without waiting.
     """
@@ -139,11 +140,11 @@ def guarded_answer(question, user, answer_fn, check_fn, role="public", visibilit
     if limiter and not limiter.allow(user):
         return {"status": "rate_limited", "text": "You have sent a lot of questions in a short time. "
                 "Please wait a minute and try again.", "latency_s": 0.0, "gen_latency_s": 0.0,
-                "added_latency_s": 0.0, "cost_usd": 0.0}
+                "added_latency_s": 0.0, "cost_usd": 0.0, "fallback": "rate_limited"}
     if cap and not cap.allow(estimate_usd):
         return {"status": "spend_cap", "text": "The assistant is paused for today. The help pages are still "
                 f"open, and {SUPPORT} still answers.", "latency_s": 0.0, "gen_latency_s": 0.0,
-                "added_latency_s": 0.0, "cost_usd": 0.0}
+                "added_latency_s": 0.0, "cost_usd": 0.0, "fallback": "spend_cap"}
     start = time.perf_counter()
     with ThreadPoolExecutor(max_workers=2) as pool:
         gen_future = pool.submit(_timed, answer_fn, question)
@@ -169,7 +170,10 @@ def guarded_answer(question, user, answer_fn, check_fn, role="public", visibilit
             "latency_s": round(latency, 4), "gen_latency_s": round(gen_lat, 4),
             "check_latency_s": round(check_lat, 4), "added_latency_s": round(latency - gen_lat, 4),
             "serial_added_latency_s": round(check_lat + out_s, 4), "cost_usd": spent,
-            "wall_s": round(time.perf_counter() - start, 4)}
+            "wall_s": round(time.perf_counter() - start, 4),
+            # None when the answer was shown; else the refusal that replaced it, or the answer's own fallback.
+            "fallback": status if status != "answered" else result.get("fallback"),
+            "cited": result.get("cited", []) if status == "answered" else []}
 
 
 def _timed(fn, arg):

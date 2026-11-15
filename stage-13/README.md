@@ -18,7 +18,7 @@ Run `notebooks/13_guardrails.ipynb` and `notebooks/13_injection_and_redteam.ipyn
 | `stage-13/redteam-summary.json` | pass^3, the worst attack, injection counts | injection steps 9 and 10 |
 | `evals/regression.jsonl` | all six attacks, rerun from the file every time | injection step 8 (add your own attacks here) |
 | `stage-13/fallback.json` | main and fallback model pass rates, the gap, the routing rule, the degraded mode message | injection step 10 |
-| `stage-13/authority-table.md` | one row per tool: authority, reversibility, who approves, worst likely mistake | injection step 11, then edit it |
+| `stage-13/authority-table.md` | one row per tool: authority, reversibility, who approves, worst likely mistake | the kit ships a starter (search_docs, fetch_url, draft_issue); injection step 11 keeps it. Edit it |
 | `stage-13/README.md` | your README (replace this checklist) | you |
 
 ## Put the guardrails in your app

@@ -5,14 +5,17 @@ Options:  --split dev|held-out|regression    only that part of the golden set
           --save                             write the run record to evals/runs/<run id>.json, with every case's
                                              question, reference answer and the model's answer (for hand labels)
           --bar 0.85                         pass when at least this share of cases passes the hard gates
-                                             (default 1.0: every case must pass)
+                                             (default: the EVAL_BAR environment variable, else 0.85, as in CI)
+          --labels-out PATH                  write a CSV of every case (id, split, question, reference, answer,
+                                             and an empty label column) to hand label for Stage 8
           --check-prompts                    every prompt in prompts/ must name a passing eval run
                                              in prompts/APPROVALS.md (see stage-08/README.md)
-Exit code 1 when the pass rate is under the bar (with the default bar, when any hard gate fails, or the judge
-fails with JUDGE_HARD=1), so CI can block the pull request.
+Exit code 1 when the pass rate is under the bar (a case fails on any hard gate, or on the judge with
+JUDGE_HARD=1), so CI can block the pull request. --bar 1 makes every case count.
 The same graders run in promptfoo:  npx promptfoo@0.125.1 eval -c evals/promptfooconfig.yaml
 """
 import argparse
+import csv
 import hashlib
 import json
 import os
@@ -32,6 +35,12 @@ GOLDEN = ROOT / "evals" / "golden.jsonl"
 RUNS = ROOT / "evals" / "runs"
 PROMPTS = ROOT / "prompts"
 SPLITS = ("dev", "held-out", "regression")
+DEFAULT_BAR = 0.85  # the same default as EVAL_BAR in .github/workflows/evals.yml.example and the Makefile
+LABEL_COLUMNS = ["id", "split", "question", "reference", "answer", "label"]
+
+
+def default_bar():
+    return float(os.environ.get("EVAL_BAR") or DEFAULT_BAR)
 # The kit's own baseline approval in prompts/APPROVALS.md. It approves the kit's help_v1.md text, unchanged, so
 # --check-prompts passes on a fresh fork. It has no run file. Make a real run with --save and approve that instead.
 # While help_v1.md is still the kit's text, it passes with no row at all, so replacing the row cannot break the check.
@@ -94,12 +103,13 @@ def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def record(rows, bar=1.0):
+def record(rows, bar=None):
     """The run record: what ran, on which prompt, and what passed. --save writes it to evals/runs/.
 
     "passed" means the pass rate is at or above the bar. "cases_detail" keeps every case's question,
     reference answer and the model's answer, so you can hand label rows from a real run (Stage 8).
     """
+    bar = default_bar() if bar is None else bar
     now = datetime.now(timezone.utc)
     prompt = prompt_in_use()
     digest = sha256(prompt) if prompt and prompt.exists() else ""
@@ -124,6 +134,19 @@ def record(rows, bar=1.0):
                               "cited": r["cited"], "hard": r["hard"], "advisory": r["advisory"],
                               "judge": r["judge"], "judge_reason": r["judge_reason"], "label": ""}
                              for r in rows]}
+
+
+def write_labels(rec, path):
+    """The run's cases as a CSV to hand label: fill the label column (pass or fail) yourself."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=LABEL_COLUMNS)
+        w.writeheader()
+        for c in rec["cases_detail"]:
+            w.writerow({"id": c["case"], "split": c["split"], "question": c["question"],
+                        "reference": c["reference"], "answer": c["answer"], "label": ""})
+    return path
 
 
 def check_prompts(prompts=PROMPTS, runs=RUNS):
@@ -159,9 +182,12 @@ def main(argv=None):
     ap.add_argument("--split", choices=SPLITS)
     ap.add_argument("--save", action="store_true", help="write the run record to evals/runs/<run id>.json")
     ap.add_argument("--check-prompts", action="store_true", help="also check prompts/APPROVALS.md")
-    ap.add_argument("--bar", type=float, default=1.0,
-                    help="pass when this share of cases (0 to 1) passes the hard gates, like 0.85. Default 1.0")
+    ap.add_argument("--bar", type=float, default=None,
+                    help="pass when this share of cases (0 to 1) passes the hard gates. Default: EVAL_BAR, else 0.85")
+    ap.add_argument("--labels-out", help="also write the cases to this CSV to hand label, like evals/to_label.csv")
     args = ap.parse_args(argv)
+    if args.bar is None:
+        args.bar = default_bar()
     if not 0 <= args.bar <= 1:
         ap.error("--bar must be between 0 and 1")
 
@@ -186,6 +212,8 @@ def main(argv=None):
         RUNS.mkdir(parents=True, exist_ok=True)
         (RUNS / f"{rec['run_id']}.json").write_text(json.dumps(rec, indent=1) + "\n")
         print(f"Saved evals/runs/{rec['run_id']}.json. Name it in prompts/APPROVALS.md to approve the prompt.")
+    if args.labels_out:
+        print(f"Wrote {len(rows)} cases to {write_labels(rec, args.labels_out)}. Fill the label column by hand.")
     bad = not rec["passed"]
     if args.check_prompts:
         files, problems = check_prompts()

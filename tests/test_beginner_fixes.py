@@ -106,7 +106,11 @@ def test_bar_sets_the_gate(tmp_path, monkeypatch):
     real = run_evals.app_ask
     bad = {"How do I export a note as PDF?", "How do I create a note and rename it?"}  # 2 of 20 fail
     monkeypatch.setattr(run_evals, "app_ask", lambda q: {"text": "", "cited": []} if q in bad else real(q))
-    assert run_evals.main([]) == 1  # default bar: every case must pass
+    monkeypatch.delenv("EVAL_BAR", raising=False)
+    assert run_evals.main([]) == 0  # default bar 0.85: 18 of 20 is enough
+    monkeypatch.setenv("EVAL_BAR", "1")
+    assert run_evals.main([]) == 1  # EVAL_BAR=1: every case must pass
+    monkeypatch.delenv("EVAL_BAR")
     assert run_evals.main(["--bar", "0.85", "--save"]) == 0  # 18 of 20 is over 85%
     assert run_evals.main(["--bar", "0.95"]) == 1
     rec = json.loads(next((tmp_path / "runs").glob("*.json")).read_text())
@@ -356,3 +360,64 @@ def test_probe_set_runs_over_the_help_pages(tmp_path, monkeypatch):
     assert "12 help pages in the system prompt" in outputs(nb)
     runs = list(csv.DictReader(open(tmp_path / "probe_runs.csv")))
     assert len(runs) == 100 and all(int(r["input_tokens"]) > 2000 for r in runs)
+
+
+# ---------- round three ----------
+def test_light_requirements_have_rag_packages_and_rag_falls_back(monkeypatch, capsys):
+    for rel in ["app/requirements.txt", "stage-07/requirements.txt"]:
+        text = (ROOT / rel).read_text()
+        assert "numpy==2.4.6" in text and "rank_bm25==0.2.2" in text and "torch" not in text.replace("no torch", "")
+    from kit import rag
+    monkeypatch.delenv("KIT_OFFLINE", raising=False)
+    monkeypatch.delenv("KIT_EMBEDDER", raising=False)
+    monkeypatch.setitem(sys.modules, "sentence_transformers", None)  # as if it were not installed
+    emb = rag.get_embedder()
+    assert isinstance(emb, rag.HashEmbedder) and "hash embedder" in capsys.readouterr().out
+
+
+def test_every_notebook_clones_a_branch():
+    for path in sorted(NB.glob("*.ipynb")):
+        setup = nbformat.read(path, as_version=4).cells[2].source
+        assert 'BRANCH = "main"' in setup and '"git", "clone", "-b", BRANCH, REPO_URL' in setup, path.name
+
+
+def test_draft_issue_needs_approval(tmp_path):
+    from app import tools
+    out, held = tmp_path / "outbox.jsonl", tmp_path / "held.jsonl"
+    assert tools.draft_issue("t", "b", outbox=out, held_log=held)["denied"] and not out.exists()
+    assert tools.draft_issue("t", "b", approved="yes", outbox=out, held_log=held)["denied"]  # only True counts
+    assert tools.draft_issue("t", "b", approved=True, outbox=out, held_log=held)["saved"]
+    assert len(out.read_text().splitlines()) == 1 and len(held.read_text().splitlines()) == 2
+    table = (ROOT / "stage-13" / "authority-table.md").read_text()
+    assert all(f"| {t} |" in table for t in ["search_docs", "fetch_url", "draft_issue"])
+
+
+def test_injection_notebook_keeps_a_shipped_authority_table(tmp_path, monkeypatch):
+    (tmp_path / "authority-table.md").write_text("# Authority table\n\nmine\n")
+    run_nb("13_injection_and_redteam.ipynb", tmp_path, monkeypatch)
+    assert (tmp_path / "authority-table.md").read_text() == "# Authority table\n\nmine\n"
+
+
+def test_guarded_answer_always_has_a_fallback_key():
+    from kit.guardrails import RateLimiter, guarded_answer
+    good = lambda q: {"text": "Choose Export [qn-02].", "cited": ["qn-02"], "call": None, "fallback": None}  # noqa: E731
+    ok = lambda q: (True, "", None)  # noqa: E731
+    vis = {"qn-02": "public"}
+    shown = guarded_answer("pdf?", "u", good, ok, visibility=vis)
+    assert shown["status"] == "answered" and shown["fallback"] is None
+    assert guarded_answer("pdf?", "u", good, ok)["fallback"] == "refused_output"  # unknown page: treated as admin
+    assert guarded_answer("pdf?", "u", good, lambda q: (False, "off topic", None))["fallback"] == "refused_input"
+    limiter = RateLimiter(0, 60)
+    assert guarded_answer("pdf?", "u", good, ok, limiter=limiter)["fallback"] == "rate_limited"
+    nopage = lambda q: {"text": "No help page matches.", "cited": [], "call": None, "fallback": "no_page"}  # noqa: E731
+    assert guarded_answer("zzzz", "u", nopage, ok)["fallback"] in ("no_page", "refused_output")
+
+
+def test_labels_out_writes_a_csv_to_label(tmp_path, monkeypatch):
+    monkeypatch.delenv("EVAL_BAR", raising=False)
+    out = tmp_path / "to_label.csv"
+    assert run_evals.main(["--split", "regression", "--labels-out", str(out)]) == 0
+    rows = list(csv.DictReader(open(out)))
+    assert list(rows[0]) == ["id", "split", "question", "reference", "answer", "label"]
+    assert len(rows) == 4 and all(r["question"] and r["answer"] and r["label"] == "" for r in rows)
+    assert "EVAL_BAR" in (ROOT / "prompts" / "APPROVALS.md").read_text()

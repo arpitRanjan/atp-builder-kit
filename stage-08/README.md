@@ -35,7 +35,9 @@ baseline, not a real run. It passes only while `help_v1.md` is unchanged. Replac
 ## The pass bar
 
 `python evals/run_evals.py --bar 0.85` passes when at least 85% of cases pass the hard gates. With no `--bar`,
-every case must pass. The workflow sets the bar once, in `EVAL_BAR`, and promptfoo uses the same number
+it uses the `EVAL_BAR` environment variable, else 0.85. Use `--bar 1` to make every case pass.
+`--labels-out evals/to_label.csv` writes every case of the run (question, reference, answer, an empty label)
+to a CSV you can label by hand. The workflow sets the bar once, in `EVAL_BAR`, and promptfoo uses the same number
 (`PROMPTFOO_PASS_RATE_THRESHOLD`). Pick your own bar and write why in this README.
 
 ## How to get a blocked pull request

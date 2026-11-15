@@ -92,7 +92,14 @@ def use_stand_ins():
 
 
 def get_embedder():
-    return HashEmbedder() if use_stand_ins() else LocalEmbedder()
+    if use_stand_ins():
+        return HashEmbedder()
+    try:
+        return LocalEmbedder()
+    except ImportError:  # a light install (Streamlit Cloud with app/requirements.txt) has no sentence-transformers
+        print("Note: sentence-transformers is not installed, so search uses the small hash embedder instead of "
+              f"{EMBED_MODEL}. Install sentence-transformers (and torch) for the real model.")
+        return HashEmbedder()
 
 
 class VectorIndex:

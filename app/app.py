@@ -59,8 +59,8 @@ def answer(question, folder=None, model=None, provider=None):
 
 # ---------- Ready, not on by default: answer through kit/rag.py (Chapter 9 retrieval with role filters) ----------
 # To switch: in main() (and app/api.py) call answer_rag(question, role) instead of answer(question).
-# It needs numpy and rank_bm25, and sentence-transformers unless KIT_EMBEDDER=hash (the small stand-in).
-# On Streamlit Cloud add those to app/requirements.txt first.
+# It needs numpy and rank_bm25 (both in app/requirements.txt). Without sentence-transformers, kit/rag.py
+# falls back to the small hash embedder and prints a note, so it works on Streamlit Cloud with no torch.
 RAG_STRATEGY = "hybrid"  # vector, hybrid or hybrid_rerank (see kit/rag.py)
 _RAG = {}
 
