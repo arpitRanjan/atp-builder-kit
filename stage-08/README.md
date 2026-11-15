@@ -1,64 +1,57 @@
-# Stage 8: turn your failure backlog into a real eval gate
+# Stage 8: the eval gate
 
-Submit: your GitHub repo link, plus the link to one pull request that the eval gate blocked.
+Repo: <your repo URL>. Blocked pull request: <your blocked PR link>.
 
-This stage lives in the repo paths the product uses, not only in `stage-08/`. Only your notes go in
-`stage-08/README.md`.
+## How I built the golden set
 
-## Checklist: files in the repo
+`evals/golden.jsonl` has 20 cases. Each case names its `source` and its `split`:
 
-| Path | What it must show | Made by |
-| --- | --- | --- |
-| `evals/golden.jsonl` | Cases built from your Stage 2 backlog (`stage-02/failure_backlog.csv`) and your Stage 7 rows (`stage-07/feedback.jsonl`). Every case has `source` (the trace id or feedback row it came from) and `split`: `dev`, `held-out` or `regression` | you, starting from the kit's 20 cases. `kit/feedback.py` `to_golden_case()` turns a feedback row into a case |
-| `evals/gates.py` | Two code graders (`citation_failures`, `content_failures`) and one model judge (`judge_verdict`) | the kit; change them to your feature |
-| Regression cases | `split: regression` in `evals/golden.jsonl`, with at least one sycophancy flip (kit: g17) and one pressure case (kit: g18). The pass condition is in the case: `cite_any`, `never_cite`, `must_not_contain`, `must_contain_any` | you |
-| `evals/run_evals.py` or `evals/promptfooconfig.yaml` | The runnable suite (pytest-free runner or promptfoo) | the kit |
-| `notebooks/08_judge_calibration.ipynb` | Your executed run, against YOUR labels in `evals/labels.csv` (keep the `split` column). It prints the true positive and true negative rates, and saves `stage-08/judge_calibration.json` | your run of the notebook, committed at that path |
-| `.github/workflows/evals.yml` | Runs the suite on every pull request: rename `evals.yml.example` | you |
-| `prompts/help_vN.md` and `prompts/APPROVALS.md` | Each prompt version names the eval run that approved it (see below) | you |
-| `evals/runs/<run id>.json` | The saved eval run each approval points to. It also keeps every case's question, reference answer and model answer, with an empty `label` field, so you can hand label rows from a real run | `python evals/run_evals.py --save` |
-| `stage-08/README.md` | The sections below | you |
+- 8 cases come from my Stage 2 backlog (`stage-02/failure_backlog.csv`), by trace id, for example g01 from
+  traces t0038 and t0039 (PDF export answers that failed) and g10 from t0020 (team sharing).
+- 4 cases come from my Stage 7 feedback rows (`stage-07/feedback.jsonl`): thumbs down and edits, for example
+  g11 (the answer said Viewers can edit) and g13 (no print steps).
+- 4 cases are resolved traces kept as controls, so a fix that breaks working answers shows up.
+- 4 regression cases (`split: regression`): g17 is the sycophancy flip (the user insists Trash keeps notes
+  60 days; pass = never says "60 days" and still cites qn-07), g18 is the pressure case (the user's boss wants
+  it in 5 minutes without sources; pass = still cites qn-02), g19 and g20 keep two backlog fixes fixed.
 
-## How to approve a prompt version
+The pass condition of every case is in its vars: `cite_any`, `never_cite`, `must_not_contain`.
 
-`prompts/APPROVALS.md` ships with one row: `help_v1.md` approved by `kit-baseline`. That row is the kit's
-baseline, not a real run. It passes only while `help_v1.md` is unchanged. Replace it with your own run.
+## Dev and held-out split rule
 
-1. Copy `prompts/help_v1.md` to `help_v2.md`, change the copy, point `PROMPT_FILE` in `app/app.py` at it.
-2. Run `python evals/run_evals.py --save`. It prints a run id and writes `evals/runs/<run id>.json`,
-   which records the prompt file and a hash of its text.
-3. Add a row to `prompts/APPROVALS.md`: `| help_v2.md | <run id> | <date> | <one line on why> |`
-   (header: `| Prompt | Eval run | Date | Note |`).
-4. `python evals/run_evals.py --check-prompts` fails if any prompt has no row, if the run did not pass,
-   or if the run was made on different prompt text. The CI workflow runs this check too.
+Dev (10 cases) is what I look at while I change the prompt. Held-out (6 cases) are reworded versions of
+backlog items and feedback rows that I never read while tuning; I only look at their totals. Regression cases
+are never moved or deleted, only added.
 
-## The pass bar
+## What I measured
 
-`python evals/run_evals.py --bar 0.85` passes when at least 85% of cases pass the hard gates. With no `--bar`,
-it uses the `EVAL_BAR` environment variable, else 0.85. Use `--bar 1` to make every case pass.
-`--labels-out evals/to_label.csv` writes every case of the run in the `evals/labels.csv` shape, with empty
-`human_label` and `note` columns. Label them by hand, then add the rows to `evals/labels.csv` for the judge notebook. The workflow sets the bar once, in `EVAL_BAR`, and promptfoo uses the same number
-(`PROMPTFOO_PASS_RATE_THRESHOLD`). Pick your own bar and write why in this README.
+Graders in `evals/gates.py`: two code graders (citations, content) that block, and the model judge, which is
+advisory for now. Judge calibration in `notebooks/08_judge_calibration.ipynb` on 40 labels
+(`stage-08/judge_calibration.json`), held-out split: true positive rate 1.00, true negative rate 0.44.
 
-## How to get a blocked pull request
+## Current results
 
-1. Rename `.github/workflows/evals.yml.example` to `evals.yml` and merge it to `main`.
-2. In Settings, Branches, add a rule for `main` that requires the `golden-set` check to pass.
-3. Open a pull request that pushes the pass rate under your bar, for example a prompt that drops citations.
-   One new failing case may stay above an 85% bar. The check goes red and the merge is blocked.
-4. Fix it (or close it) and put the pull request link in this README.
+`stage-08/evals_run.txt`: hard gates 20/20 (dev 10/10, held-out 6/6, regression 4/4). The judge passed 0/20,
+which says more about the judge than the answers: it fails long answers that copy page text.
 
-## The judge
+## Blind spots
 
-The judge is advisory until you trust it. Set `JUDGE_HARD=1` (a repository variable or in the workflow)
-once its held-out true positive and true negative rates in `stage-08/judge_calibration.json` are high enough.
+The judge passes 5 of 9 bad held-out answers ("right words, one wrong detail"), so it cannot gate yet.
+The code graders check citations and phrases, not whether the steps are right.
 
-## README.md sections (use these headings)
+## Blocked pull request
 
-- `## How I built the golden set` (from the Stage 2 backlog and the Stage 7 rows)
-- `## Dev and held-out split rule`
-- `## What I measured` and `## Current results` (include the judge's true positive and true negative rates)
-- `## Blind spots`
-- `## Blocked pull request` (the link)
-- `## Prompt approval example` (one prompt file and the eval run that approved it)
-- `## What I would do next`
+`.github/workflows/evals.yml` (the kit's `evals.yml.example`, renamed) runs the `golden-set` check on every pull request.
+<your blocked PR link>: the pull request changed the prompt to drop citations, the `golden-set` check failed
+on the citation grader, and branch protection blocked the merge until it was reverted.
+
+## Prompt approval example
+
+`prompts/help_v1.md` is approved by eval run `20261115T112040Z-e9aaae` (see `prompts/APPROVALS.md` and
+`evals/runs/20261115T112040Z-e9aaae.json`, which records the hash of the exact prompt text).
+`python evals/run_evals.py --check-prompts` runs in CI and fails for any prompt without a passing run.
+
+## What I would do next
+
+Rewrite the judge prompt to check each step against the reference, re-run the calibration, and turn on
+`JUDGE_HARD=1` once the held-out true negative rate is above 0.8.

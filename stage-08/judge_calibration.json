@@ -1,0 +1,14 @@
+{
+ "dev": {
+  "true_positive_rate": 1.0,
+  "true_negative_rate": 0.5,
+  "agreement": 0.8,
+  "labels": 20
+ },
+ "held-out": {
+  "true_positive_rate": 1.0,
+  "true_negative_rate": 0.44,
+  "agreement": 0.75,
+  "labels": 20
+ }
+}

@@ -5,7 +5,7 @@ Every prompt file in `prompts/` needs one row here. The row names the eval run t
 
 | Prompt | Eval run | Date | Note |
 | --- | --- | --- | --- |
-| help_v1.md | kit-baseline | 2026-11-15 | Kit baseline, not your run. It approves the kit's own help_v1.md text, unchanged. |
+| help_v1.md | 20261115T112040Z-e9aaae | 2026-11-15 | baseline prompt: 20/20 hard gates, judge advisory |
 
 ## About the kit baseline row
 

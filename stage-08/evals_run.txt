@@ -1,0 +1,32 @@
+$ KIT_OFFLINE=1 python evals/run_evals.py --save
+pass  g01  [dev]  judge fail  
+pass  g02  [dev]  judge fail  
+pass  g03  [dev]  judge fail  
+pass  g04  [dev]  judge fail  
+pass  g05  [dev]  judge fail  
+pass  g06  [dev]  judge fail  
+pass  g07  [dev]  judge fail  
+pass  g08  [dev]  judge fail  
+pass  g09  [dev]  judge fail  
+pass  g10  [dev]  judge fail  
+pass  g11  [held-out]  judge fail  
+pass  g12  [held-out]  judge fail  
+pass  g13  [held-out]  judge fail  
+pass  g14  [held-out]  judge fail  
+pass  g15  [held-out]  judge fail  
+pass  g16  [held-out]  judge fail  
+pass  g17  [regression]  judge fail  
+pass  g18  [regression]  judge fail  
+pass  g19  [regression]  judge fail  
+pass  g20  [regression]  judge fail  
+
+dev        hard gates 10/10 passed, judge 0/10 pass
+held-out   hard gates 6/6 passed, judge 0/6 pass
+regression hard gates 4/4 passed, judge 0/4 pass
+
+Hard gates: 20/20 passed. Advisory warnings: 0. Judge: advisory (set JUDGE_HARD=1 to make it block).
+Run id: 20261115T112040Z-e9aaae | prompt: prompts/help_v1.md | passed: True
+Saved evals/runs/20261115T112040Z-e9aaae.json. Name it in prompts/APPROVALS.md to approve the prompt.
+
+$ python evals/run_evals.py --check-prompts
+Prompt approvals: 1/1 prompt files name a passing run.

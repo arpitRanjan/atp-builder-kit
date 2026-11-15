@@ -1,0 +1,32 @@
+{
+ "run_id": "20261115T112040Z-e9aaae",
+ "timestamp": "2026-11-15T11:20:40+00:00",
+ "git_sha": "",
+ "provider": "mock",
+ "model": "mock-model",
+ "prompt_file": "prompts/help_v1.md",
+ "prompt_sha256": "e9aaae95d6da02df6850c54c1f013bb383133e350e4bcb159d7ce183b89c6052",
+ "judge_hard": false,
+ "cases": 20,
+ "hard_failures": 0,
+ "judge_failures": 20,
+ "passed": true,
+ "by_split": {
+  "dev": {
+   "cases": 10,
+   "hard_pass": 10,
+   "judge_pass": 0
+  },
+  "held-out": {
+   "cases": 6,
+   "hard_pass": 6,
+   "judge_pass": 0
+  },
+  "regression": {
+   "cases": 4,
+   "hard_pass": 4,
+   "judge_pass": 0
+  }
+ },
+ "failed_cases": {}
+}
