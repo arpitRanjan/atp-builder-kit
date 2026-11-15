@@ -1,0 +1,24 @@
+{
+ "ada (admin)": {
+  "role": "admin",
+  "admin_chunks_retrieved": [
+   "qn-13#0",
+   "qn-13#1",
+   "qn-14#0",
+   "qn-14#1",
+   "qn-15#0",
+   "qn-15#1"
+  ],
+  "answer": "If a customer was charged twice for the same Quillnote purchase, you can issue a refund from the Admin Console. 1. Sign in to **Admin Console** with billing permissions. 2. [qn-13#0]",
+  "cited_chunks": [
+   "qn-13#0"
+  ]
+ },
+ "pat (public)": {
+  "role": "public",
+  "admin_chunks_retrieved": [],
+  "answer": "The sources do not answer this.",
+  "cited_chunks": []
+ },
+ "passed": true
+}

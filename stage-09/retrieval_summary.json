@@ -1,0 +1,12 @@
+{
+ "strategy": "hybrid",
+ "chunk_size": 120,
+ "overlap": 30,
+ "questions": 25,
+ "recall@5": 0.98,
+ "citation_faithfulness": 0.88,
+ "min_recall": 0.8,
+ "min_faithful": 0.7,
+ "leak_test_passed": true,
+ "passed": true
+}

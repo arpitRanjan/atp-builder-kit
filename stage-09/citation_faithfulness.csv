@@ -1,0 +1,26 @@
+qid,cited,label_faithful,judge_faithful,answer
+q01,qn-01#0,True,True,To create a note: 1. Open Quillnote and sign in. 2. Select **New Note**. 3. Type a title at the top. 4. Add your text in the note area. 5. [qn-01#0]
+q02,qn-07#0,False,False,The sources do not answer this.
+q03,qn-02#0,True,True,To export a note as a PDF in Quillnote: 1. Open the note you want to save. 2. Check the note layout and make any final edits. 3. Select **More** [qn-02#0]
+q04,qn-04#0,False,False,To export a note as a PDF in Quillnote: 1. Open the note you want to save. 2. Check the note layout and make any final edits. 3. Select **More** [qn-02#0]
+q05,qn-01#0,False,True,To create a note: 1. Open Quillnote and sign in. 2. Select **New Note**. 3. Type a title at the top. 4. Add your text in the note area. 5. [qn-01#0]
+q06,qn-08#0,False,False,"Use **folders** to group notes by project, class, or area of life. Use **tags** to label notes across folders, like `ideas`, `urgent`, or `recipes`. - **Create a folder** 1. Open [qn-03#0]"
+q07,qn-01#1,False,True,"as **Bold**, **Italic**, or **Checklist**. 3. Continue editing until the note looks the way you want. To organize your work: 1. Use **Folders** or **Tags** to group notes. 2. Rename [qn-01#1]"
+q08,qn-12#0,False,False,"retry. - **Restart the app.** Close Quillnote fully, then open it again. - **Restart your device.** This can fix temporary network or background update issues. - **Update Quillnote.** Install the [qn-05#1]"
+q09,qn-06#0,True,True,Use **Themes** in Quillnote to change how the app looks and feels. Dark mode can make reading easier in low light and may reduce eye strain. - Open **Quillnote**. - [qn-06#0]
+q10,qn-01#1,False,False,Use **Themes** in Quillnote to change how the app looks and feels. Dark mode can make reading easier in low light and may reduce eye strain. - Open **Quillnote**. - [qn-06#0]
+q11,qn-08#1,False,True,- Wait a moment for sync to start. - Let the app finish uploading your offline changes. Tips: - Keep the app updated so offline storage works smoothly. - Open [qn-08#1]
+q12,qn-02#0,False,False,Quillnote works offline so you can keep reading and writing notes when you do not have internet access. - Open Quillnote while you are online. - Sign in and wait [qn-08#0]
+q13,qn-08#0,True,True,Quillnote works offline so you can keep reading and writing notes when you do not have internet access. - Open Quillnote while you are online. - Sign in and wait [qn-08#0]
+q14,qn-15#0,False,False,"price, billing cycle, and included features. 5. Confirm your purchase. To manage billing: 1. Open **Settings** > **Plans and Pricing** > **Billing**. 2. Update your payment method if needed. 3. [qn-09#1]"
+q15,qn-10#1,True,True,"invite**. Your teammates will get an invitation to join the notebook. After they accept, the notebook will appear in their sidebar. ### Tips - Use **Can view** for people who [qn-10#1]"
+q16,qn-09#1,False,False,To share a notebook with your team in Quillnote: 1. Open Quillnote and select the notebook you want to share. 2. Click **Share** in the top right corner. 3. In [qn-10#0]
+q17,qn-11#0,True,True,"In Quillnote, team roles control who can view, edit, organize, and manage shared notes. - **Open your team space** Go to the sidebar and select your team. - **Open team [qn-11#0]"
+q18,qn-02#1,False,False,Use shared templates to help your team create notes in the same format. - Open **Quillnote** and go to **Templates**. - Select **Team Templates**. - Click **New Template**. - Add [qn-12#0]
+q19,qn-12#1,True,True,**Share**. - Choose the team or workspace that should use it. - Set permissions: - **Can use** for regular team members - **Can edit** for template owners or leads - [qn-12#1]
+q20,qn-07#1,False,True,"Use search to quickly find notes by title, text, tag, or date. - Open **Quillnote**. - Tap or click the **Search** field at the top of the notes list. - [qn-04#0]"
+q21,qn-08#0,True,True,Quillnote works offline so you can keep reading and writing notes when you do not have internet access. - Open Quillnote while you are online. - Sign in and wait [qn-08#0]
+q22,qn-10#0,False,False,"If a customer was charged twice for the same Quillnote purchase, you can issue a refund from the Admin Console. 1. Sign in to **Admin Console** with billing permissions. 2. [qn-13#0]"
+q23,qn-14#0,True,True,"If a user asks for their data to be deleted, follow these steps in Quillnote: 1. Sign in with an admin account. 2. Open **Admin Console**. 3. Go to **Users** [qn-14#0]"
+q24,qn-01#1,False,False,"Use the audit log to review important activity in Quillnote, such as sign-ins, note sharing, workspace changes, and admin updates. - Sign in to Quillnote with an admin account. - [qn-15#0]"
+q25,qn-14#0,True,True,"If a user asks for their data to be deleted, follow these steps in Quillnote: 1. Sign in with an admin account. 2. Open **Admin Console**. 3. Go to **Users** [qn-14#0]"

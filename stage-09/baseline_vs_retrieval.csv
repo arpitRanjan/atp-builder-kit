@@ -1,0 +1,5 @@
+setup,accuracy,input_tokens,cost_per_question_usd,median_latency_s
+"RAG, 120 word chunks",0.84,515.52,0.000685,0.7
+"RAG, 8 word chunks",0.6,98.44,0.000149,0.563
+"RAG, qn-07 missing",0.88,515.4,0.00069,0.616
+whole corpus in prompt,0.8,3990.24,0.004158,0.581

@@ -1,0 +1,19 @@
+{
+ "changed_page": "qn-12",
+ "sync_every_min": 15,
+ "cache_ttl_min": 5,
+ "stale_window_min_index_only": 10,
+ "stale_minutes": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9
+ ],
+ "stale_window_min_with_live_check": 0
+}
