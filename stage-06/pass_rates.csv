@@ -1,0 +1,8 @@
+config,step_budget,spend_budget,retry,approval,validation,passed,tasks,pass_rate,tool_steps,cost_usd,failed_tasks
+all on,on,on,on,on,on,10,10,1.0,18,0.01969,
+all off,off,off,off,off,off,5,10,0.5,31,0.03316,"t05, t07, t08, t09, t10"
+no step_budget,off,on,on,on,on,10,10,1.0,31,0.0269,
+no spend_budget,on,off,on,on,on,9,10,0.9,19,0.03189,t09
+no retry,on,on,off,on,on,9,10,0.9,19,0.01974,t08
+no approval,on,on,on,off,on,9,10,0.9,18,0.01968,t07
+no validation,on,on,on,on,off,9,10,0.9,17,0.0194,t05

@@ -1,0 +1,7 @@
+variant,pass_rate,input_tokens,failed_probes
+all blocks,1.0,443.14,
+no system,0.86,423.14,"p13, p14"
+no examples,0.79,394.64,"p01, p02, p03"
+no tools,0.79,379.93,"p04, p05, p06"
+no history,0.79,389.14,"p07, p08, p09"
+no instructions,0.79,375.14,"p10, p11, p12"

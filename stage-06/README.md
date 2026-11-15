@@ -1,38 +1,52 @@
-# Stage 6: an agent loop for one feature
+# Stage 6: agent loop for drafting bug reports from help questions
 
-Submit: the GitHub link to your repo's `stage-06/` folder.
+Feature from my Stage 5 PRD: answer a Quillnote help question with cited pages, and draft a bug report
+when the user asks for one. Built in `06_harness.ipynb` on my own loop with two tools: `search_docs`
+(my Stage 3 MCP search tool, `mcp_server/server.py`) and `draft_issue` (a mock tool that only appends
+to `outbox.jsonl`). Every step is logged to `traces/run.jsonl`.
 
-Build the agent version of ONE feature from your Stage 5 PRD on your own loop. The kit example feature:
-answer a Quillnote help question with cited pages, and draft a bug report when the user asks for one.
-Change the tasks, tools and checks in `notebooks/06_harness.ipynb` to fit your feature.
+## Why this feature needs an agent
 
-## Checklist: files in stage-06/
+The number and order of steps depends on the request. A plain question needs one search and an answer.
+A bug report needs a search for related pages, then a draft, then an answer that says what was saved.
+A fixed workflow would either always draft (wrong for questions) or never search before drafting.
 
-| File | What it must show | Made by |
-| --- | --- | --- |
-| `06_harness.ipynb` | Your loop with 2 or 3 tools: `search_docs` (your Stage 3 MCP search tool, from `mcp_server/server.py`) and `draft_issue` (a mock state-changing tool that writes only to a local file). All five controls in code: `STEP_BUDGET`, `SPEND_BUDGET_USD`, `MAX_RETRIES` (capped retry), the approval check (each task's `approved` flag, with its pass check in `expect`), and `validate_final` with `MAX_VALIDATION_RETRIES = 1` | your run of `notebooks/06_harness.ipynb`, saved here |
-| `traces/run.jsonl` | One JSON line per step: `run_id`, `step`, `action`, and the `stop`, `retry`, `validation`, `approval` and `error` flags | `06_harness`, step 6 |
-| `pass_rates.csv` | 10 tasks, 7 rows: all on, all off, and one row each with only the step budget, spend budget, capped retry, approval check or validation turned off | `06_harness`, step 7 |
-| `runs.csv` | One row per run (70 runs), with its stop reason and cost | `06_harness`, step 6 |
-| `outbox.jsonl` | What the mock tool wrote. Nothing was sent anywhere | `06_harness` |
-| `failed_run.md` | One failed run, step by step from the trace, with the failing layer named. Fill in the "Why" part yourself | `06_harness`, step 9 |
-| `06_context_ablation.ipynb` | Block ablation, compaction and memory, on the same feature and help pages | your run of `notebooks/06_context_ablation.ipynb` |
-| `context_ablation.csv` | The context ablation table | `06_context_ablation`, step 5 |
-| `compaction_check.csv` | The compaction check: which constraints survive a summary, before and after pinning | `06_context_ablation`, steps 7 and 8 |
-| `README.md` | The five sections below | you |
+## Controls I chose and why
 
-`06_agent_loop` and `06_structured_output` are practice notebooks. They are not required for this stage.
+All five are in code in `run_agent()`, not in the prompt:
 
-## README.md sections (use these headings)
+- Step budget: `STEP_BUDGET = 6` model calls. Normal runs need 2 or 3.
+- Spend budget: `SPEND_BUDGET_USD = 0.01` per run, checked before each call with an estimate of the next call.
+- Capped retry: `MAX_RETRIES = 2` for timeouts and dropped connections only.
+- Approval check: `draft_issue` runs only when the task is in `APPROVED`. Otherwise the tool returns DENIED.
+- Validated structured output: `validate_final()` checks the final answer against `AgentAnswer` (it must cite
+  a page a tool returned, and must not claim a draft that was never saved), with `MAX_VALIDATION_RETRIES = 1`.
 
-- `## Why this feature needs an agent` (and not a fixed workflow)
-- `## Controls I chose and why`
-- `## What I measured` (the pass-rate table and what the numbers say)
-- `## What failed` (link `failed_run.md`)
-- `## Next change I would test`
+## What I measured
 
-## How to save the files
+10 tasks, 7 configurations, 70 runs (`pass_rates.csv`, `runs.csv`):
 
-The notebooks write to `stage-06/` by default. In Colab they write to Colab's copy of your repo: download
-them from the Files panel (and the notebook with File, then Download .ipynb) and commit them here.
-Run live (with a key) for numbers you can use. The offline mock (`KIT_OFFLINE=1`) only proves the code runs.
+| Config | Passed | Failed tasks | Cost (USD) |
+| --- | --- | --- | --- |
+| all on | 10/10 | none | 0.01969 |
+| all off | 5/10 | t05, t07, t08, t09, t10 | 0.03316 |
+| no step budget | 10/10 | none | 0.02690 |
+| no spend budget | 9/10 | t09 | 0.03189 |
+| no capped retry | 9/10 | t08 | 0.01974 |
+| no approval check | 9/10 | t07 | 0.01968 |
+| no validation | 9/10 | t05 | 0.01940 |
+
+Each control saves one task except the step budget: with it off, the spend budget still stopped the
+endless task (t10), but only after 19 steps instead of 6, and that run cost $0.0092 instead of $0.0020.
+
+## What failed
+
+`failed_run.md` walks through run `no-retry-t08` step by step. Failing layer: harness. The search tool
+timed out once, nothing retried it, and the user got the fallback instead of an answer.
+
+Context: `context_ablation.csv` shows which probes fail when each block is removed. `compaction_check.csv`
+shows the budget constraint ("20 dollars") is lost by the summary and kept once it is pinned.
+
+## Next change I would test
+
+Make the step budget the first stop for runaway loops: lower it to 4 and check that t01 to t08 still pass.

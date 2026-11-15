@@ -1,0 +1,7 @@
+constraint,in_summary,answered_after_restart,history
+Always use British spelling in your replies.,True,True,summary only
+Never put my email address in a ticket.,True,True,summary only
+My budget for add-ons is 20 dollars a month.,False,False,summary only
+Always use British spelling in your replies.,True,True,pinned constraints + summary
+Never put my email address in a ticket.,True,True,pinned constraints + summary
+My budget for add-ons is 20 dollars a month.,True,True,pinned constraints + summary
