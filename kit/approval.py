@@ -31,7 +31,10 @@ REFUSALS = [
      "limit": "I cannot do admin actions or show admin only steps.",
      "reason": "Refunds, user deletion, billing changes and the audit log are for workspace admins only.",
      "next_step": "Ask your workspace admin, or ask me how to find who your admin is."},
-    {"kind": "other_users_data", "pattern": r"\b(all users|every user|everyone's|other users'?|someone else's)\b",
+    {"kind": "other_users_data",
+     "pattern": r"\b(all users|every user|everyone['’]s|other users'?|(someone|somebody|anyone|anybody) else['’]s|"
+                r"another (person|user|member|customer|teammate|colleague)['’]s|other (people|person)['’]s|"
+                r"(my )?(coworker|co-worker|colleague|teammate)['’]s (notes?|notebooks?|account|data))\b",
      "limit": "I cannot look up other people's notes or account details.",
      "reason": "Each person can only see their own notes and the notebooks shared with them.",
      "next_step": "Ask the owner to share the notebook with you, or ask me how sharing works."},

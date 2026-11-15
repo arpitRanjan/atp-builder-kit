@@ -40,6 +40,30 @@ npx @modelcontextprotocol/inspector python mcp_server/server.py
 Open the link it prints, click **Connect**, then **Tools**, **List Tools**, pick `search_docs` and run it.
 Write the date you did this in `stage-03/MCP.md`.
 
+### In GitHub Codespaces
+
+The Inspector runs inside the codespace, so your browser reaches it through a forwarded port.
+The current Inspector (version 2) has one web port, 6274. It also prints a URL with a token. Use that token.
+
+1. Start it so it accepts the forwarded address:
+
+   ```
+   ALLOWED_ORIGINS="https://${CODESPACE_NAME}-6274.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}" \
+   MCP_INSPECTOR_ALLOWED_HOSTS=".${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}" \
+   MCP_AUTO_OPEN_ENABLED=false \
+   npx @modelcontextprotocol/inspector python mcp_server/server.py
+   ```
+
+2. It prints a link like `http://localhost:6274/?MCP_INSPECTOR_API_TOKEN=...`. Copy the part from `?` on.
+3. Open the **Ports** tab. Copy the forwarded address of port 6274. Open it in your browser with the
+   copied `?MCP_INSPECTOR_API_TOKEN=...` part added to the end.
+4. Connect, then use **Tools** as above.
+
+An older Inspector (version 0.x) also runs a proxy on port 6277. With that one, open the forwarded 6274 page.
+Under **Configuration**, set **Inspector Proxy Address** to the forwarded address of port 6277 (Ports tab).
+Paste the session token it printed into **Proxy Session Token**. Then click **Connect**.
+The codespace forwards both ports.
+
 ## Optional: use it from Claude Desktop
 
 Add this to Claude Desktop's `claude_desktop_config.json` (use full paths):

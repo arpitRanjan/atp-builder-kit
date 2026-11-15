@@ -97,7 +97,10 @@ def test_eval_run_record_and_prompt_approvals(tmp_path, monkeypatch, capsys):
     prompts = tmp_path / "prompts"
     prompts.mkdir()
     (prompts / "help_v1.md").write_bytes((ROOT / rec["prompt_file"]).read_bytes())
-    assert run_evals.check_prompts(prompts, tmp_path / "runs")[1] == ["help_v1.md: no row in prompts/APPROVALS.md"]
+    assert run_evals.check_prompts(prompts, tmp_path / "runs")[1] == []  # the kit's unchanged prompt needs no row
+    (prompts / "help_v2.md").write_text("A new prompt version.")
+    assert run_evals.check_prompts(prompts, tmp_path / "runs")[1] == ["help_v2.md: no row in prompts/APPROVALS.md"]
+    (prompts / "help_v2.md").unlink()
     (prompts / "APPROVALS.md").write_text(f"| Prompt | Eval run | Date | Note |\n| --- | --- | --- | --- |\n"
                                           f"| help_v1.md | {rec['run_id']} | 2026-11-15 | baseline |\n")
     assert run_evals.check_prompts(prompts, tmp_path / "runs")[1] == []

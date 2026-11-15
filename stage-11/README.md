@@ -32,8 +32,9 @@ A section called **Decisions, Measures, and Next** that says:
 ## The one change
 
 Pick a recurring item from `field-log.csv` (the `item` column shows which ones repeat). Step 7 shows one
-example: an answer that always ends with "contact support" when no page answers. That example lives in
-`stage-11/answer.py`. The notebook imports its `answer` and `answer_with_support` functions, so an edit
+example: an answer that always ends with "contact support" when no page answers. The kit's `SYSTEM` prompt
+does not ask for a support line, so that gap shows up in the field log. The fix is in code, in `SUPPORT_LINE`
+and `answer_with_support()`, not in the prompt. That example lives in `stage-11/answer.py`. The notebook imports its `answer` and `answer_with_support` functions, so an edit
 to that file changes what the notebook measures. Make your change there, rerun the notebook, commit the
 file, and copy the commit hash into your README.
 

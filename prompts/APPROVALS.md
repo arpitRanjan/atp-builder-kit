@@ -11,6 +11,8 @@ Every prompt file in `prompts/` needs one row here. The row names the eval run t
 
 `kit-baseline` is a special run id. It has no file in `evals/runs/`. It passes only while `help_v1.md` is
 the kit's original text, so `--check-prompts` passes on a fresh fork. If you change `help_v1.md`, the check fails.
+While `help_v1.md` is the kit's original text, it also passes with no row. So you can replace or delete the
+`kit-baseline` row at any time.
 
 ## How to approve your own prompt
 

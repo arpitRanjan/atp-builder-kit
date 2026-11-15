@@ -4,8 +4,8 @@ PYTHON ?= python
 
 .PHONY: evals traces test
 
-evals:  ## run the golden set eval suite in one command (exit 1 if a hard gate fails)
-	$(PYTHON) evals/run_evals.py
+evals:  ## run the golden set eval suite (exit 1 under the bar: EVAL_BAR, default 0.85, as in CI)
+	$(PYTHON) evals/run_evals.py --bar $${EVAL_BAR:-0.85}
 
 traces:  ## send 20 traced requests and export traces/spans.jsonl and traces/spans.csv
 	$(PYTHON) -m kit.tracing --requests 20 --out traces/spans.jsonl

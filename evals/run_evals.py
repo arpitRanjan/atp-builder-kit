@@ -34,6 +34,7 @@ PROMPTS = ROOT / "prompts"
 SPLITS = ("dev", "held-out", "regression")
 # The kit's own baseline approval in prompts/APPROVALS.md. It approves the kit's help_v1.md text, unchanged, so
 # --check-prompts passes on a fresh fork. It has no run file. Make a real run with --save and approve that instead.
+# While help_v1.md is still the kit's text, it passes with no row at all, so replacing the row cannot break the check.
 KIT_BASELINE = "kit-baseline"
 KIT_BASELINE_PROMPTS = {"help_v1.md": "e9aaae95d6da02df6850c54c1f013bb383133e350e4bcb159d7ce183b89c6052"}
 
@@ -136,7 +137,8 @@ def check_prompts(prompts=PROMPTS, runs=RUNS):
         run_id = approved.get(p.name)
         rec = runs / f"{run_id}.json"
         if not run_id:
-            problems.append(f"{p.name}: no row in prompts/APPROVALS.md")
+            if KIT_BASELINE_PROMPTS.get(p.name) != sha256(p):  # the kit's own unchanged prompt needs no row
+                problems.append(f"{p.name}: no row in prompts/APPROVALS.md")
         elif run_id == KIT_BASELINE:
             if KIT_BASELINE_PROMPTS.get(p.name) != sha256(p):
                 problems.append(f"{p.name}: the {KIT_BASELINE} row only approves the kit's own unchanged prompt "

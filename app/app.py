@@ -57,6 +57,63 @@ def answer(question, folder=None, model=None, provider=None):
     return {"text": call["text"], "cited": cited, "hits": hits, "call": call, "fallback": None}
 
 
+# ---------- Ready, not on by default: answer through kit/rag.py (Chapter 9 retrieval with role filters) ----------
+# To switch: in main() (and app/api.py) call answer_rag(question, role) instead of answer(question).
+# It needs numpy and rank_bm25, and sentence-transformers unless KIT_EMBEDDER=hash (the small stand-in).
+# On Streamlit Cloud add those to app/requirements.txt first.
+RAG_STRATEGY = "hybrid"  # vector, hybrid or hybrid_rerank (see kit/rag.py)
+_RAG = {}
+
+
+def _rag_search(folder=None):
+    from kit.rag import chunk_pages, make_search, parse_corpus
+    key = (str(folder), RAG_STRATEGY)
+    if key not in _RAG:
+        pages = parse_corpus(folder)
+        _RAG[key] = (make_search(chunk_pages(pages), RAG_STRATEGY), {p["id"]: p for p in pages})
+    return _RAG[key]
+
+
+def answer_rag(question, role="public", folder=None, model=None, provider=None):
+    """Like answer(), with kit.rag search for this role. Returns the same keys: text, cited (page ids),
+    hits (id, title, visibility, snippet), call and fallback."""
+    from kit.rag import answer_with_citations
+    search, pages = _rag_search(folder)
+    found = [(c, s) for c, s in search(question, TOP_K * 3, role)
+             if pages[c["page_id"]]["visibility"] not in HIDE_VISIBILITY][:TOP_K]
+    hits = []
+    for c, _ in found:
+        if c["page_id"] not in {h["id"] for h in hits}:
+            page = pages[c["page_id"]]
+            hits.append({"id": page["id"], "title": page["title"], "visibility": page["visibility"],
+                         "snippet": c["text"]})
+    if not hits:
+        return fallback("no_page")
+    llm_args = {k: v for k, v in {"model": model, "provider": provider}.items() if v}
+    try:
+        r = answer_with_citations(question, lambda q, k=TOP_K, role=None: found, role, TOP_K, **llm_args)
+    except LLMError:
+        return fallback("model_error", hits)
+    cited = [h["id"] for h in hits if h["id"] in r["cited_pages"]] or [h["id"] for h in hits]
+    return {"text": r["text"], "cited": cited, "hits": hits, "call": r["call"], "fallback": None}
+
+
+# Example: wrap the answer with the Stage 13 guardrails (kit/guardrails.py). Not on by default.
+#
+# from kit.guardrails import RateLimiter, SpendCap, guarded_answer, input_rules, model_input_check
+# LIMITER, CAP = RateLimiter(5, 60), SpendCap(5.0)  # 5 questions per user a minute, $5 a day
+#
+# def check(q):
+#     ok, reason = input_rules(q)
+#     return (ok, reason, None) if not ok else model_input_check(q)
+#
+# def guarded(question, role="public", user_id="demo-user"):
+#     hits = search(question, TOP_K * 3)  # no model call: the page visibilities the output check needs
+#     generate = lambda q: answer(q)  # noqa: E731  or answer_rag(q, role); runs alongside the input check
+#     return guarded_answer(question, user_id, generate, check, role=role,
+#                           visibility={h["id"]: h["visibility"] for h in hits}, limiter=LIMITER, cap=CAP)
+
+
 def guard_allows(calls_so_far, limit=MAX_CALLS_PER_SESSION):
     return calls_so_far < limit
 

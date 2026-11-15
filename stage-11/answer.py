@@ -17,8 +17,10 @@ if str(ROOT) not in sys.path:
 
 from kit.llm import call_llm  # noqa: E402
 
+# SYSTEM has no "contact support" rule on purpose: then the missing support line shows up in the field log.
+# The fix lives in code (SUPPORT_LINE and answer_with_support), where it holds on every answer.
 SYSTEM = ("Answer using only the numbered sources. Cite the source ids you used in square brackets, like [nw-02#0]. "
-          "If the sources do not answer the question, say so and tell the user to contact support.")
+          "If the sources do not answer the question, say so.")
 SUPPORT = re.compile(r"contact support", re.I)
 SUPPORT_LINE = "If this does not answer your question, contact support at support@northwind.example."
 

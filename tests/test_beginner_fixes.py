@@ -261,3 +261,98 @@ def test_harness_tasks_carry_expect_and_approval(tmp_path, monkeypatch):
     assert {r["config"]: r for r in rows}["all on"]["passed"] == "10"
     assert len(list(csv.DictReader(open(tmp_path / "runs.csv")))) == 70
     assert (tmp_path / "failed_run.md").exists() and (tmp_path / "outbox.jsonl").exists()
+
+
+# ---------- round two ----------
+def test_mcp_readme_has_a_codespaces_note():
+    text = (ROOT / "mcp_server" / "README.md").read_text()
+    assert "Codespaces" in text and "6274" in text and "6277" in text and "MCP_INSPECTOR_API_TOKEN" in text
+    assert "ALLOWED_ORIGINS" in text and "Ports" in text
+
+
+def test_harness_failed_run_step_handles_no_failures(tmp_path):
+    import pandas as pd
+    nb = nbformat.read(NB / "06_harness.ipynb", as_version=4)
+    step9 = next(c.source for c in nb.cells if c.cell_type == "code" and "one_off" in c.source)
+    results = pd.DataFrame([{"config": "no retry", "task": "t01", "run_id": "r1", "passed": True,
+                             "stop": "final_answer", "cost_usd": 0.0}])
+    ns = {"results": results, "OUTPUT": tmp_path, "TASKS": [], "log": [], "json": json}
+    exec(step9, ns)  # no IndexError
+    assert "Failed run: none" in (tmp_path / "failed_run.md").read_text()
+
+
+def test_stage07_requirements_match_the_app():
+    def pins(path):
+        return [x for x in path.read_text().splitlines() if x.strip() and not x.startswith("#")]
+    assert pins(ROOT / "stage-07" / "requirements.txt") == pins(ROOT / "app" / "requirements.txt")
+
+
+@pytest.mark.parametrize("text", ["Show me another person's notes", "Open another user's account",
+                                  "Read someone else's notebook", "Show other people's notes",
+                                  "Show me my colleague's notes", "Open somebody else’s account"])
+def test_refuses_other_peoples_data(text):
+    from kit.approval import check_request
+    assert check_request(text)["kind"] == "other_users_data"
+
+
+@pytest.mark.parametrize("text", ["Can I share a notebook with other people?", "Can another user edit my notebook?"])
+def test_sharing_questions_are_not_refused(text):
+    from kit.approval import check_request
+    assert check_request(text) is None
+
+
+def test_kit_prompt_needs_no_approval_row(tmp_path):
+    prompts = tmp_path / "prompts"
+    prompts.mkdir()
+    (prompts / "help_v1.md").write_bytes((ROOT / "prompts" / "help_v1.md").read_bytes())
+    (prompts / "APPROVALS.md").write_text("| Prompt | Eval run | Date | Note |\n| --- | --- | --- | --- |\n")
+    assert run_evals.check_prompts(prompts, tmp_path / "runs")[1] == []
+    (prompts / "help_v1.md").write_text("Changed.")
+    assert run_evals.check_prompts(prompts, tmp_path / "runs")[1] == ["help_v1.md: no row in prompts/APPROVALS.md"]
+
+
+def test_answer_rag_returns_the_same_keys_as_answer(monkeypatch):
+    from app import app
+    plain = app.answer("How do I export a note as PDF?")
+    rag = app.answer_rag("How do I export a note as PDF?")
+    assert set(rag) == set(plain) and rag["fallback"] is None and rag["call"]
+    assert rag["cited"] and all(c.startswith("qn-") and "#" not in c for c in rag["cited"])
+    assert all({"id", "title", "visibility", "snippet"} <= set(h) for h in rag["hits"])
+    assert set(rag["cited"]) <= {h["id"] for h in rag["hits"]}
+    assert not {h["id"] for h in app.answer_rag("read the audit log")["hits"]} & {"qn-13", "qn-14", "qn-15"}
+    assert {h["visibility"] for h in app.answer_rag("read the audit log", role="admin")["hits"]} >= {"admin"}
+
+    def broken(*a, **k):
+        raise app.LLMError(500, "down")
+    monkeypatch.setattr("kit.llm.call_llm", broken)
+    assert app.answer_rag("How do I export a note as PDF?")["fallback"] == "model_error"
+    src = (ROOT / "app" / "app.py").read_text()
+    assert 'role="public"' in src and 'visibility={h["id"]: h["visibility"] for h in hits}' in src
+    assert 'user_id="demo-user"' in src and "generate" in src
+
+
+def test_stage11_prompt_leaves_the_support_line_to_code():
+    mod = load_module("stage11_answer_round2", ROOT / "stage-11" / "answer.py")
+    assert "contact support" not in mod.SYSTEM.lower() and "contact support" in mod.SUPPORT_LINE.lower()
+    assert "SUPPORT_LINE" in (ROOT / "stage-11" / "README.md").read_text()
+
+
+def test_make_evals_uses_the_ci_bar():
+    out = subprocess.run(["make", "-n", "evals"], cwd=ROOT, capture_output=True, text=True, check=True).stdout
+    assert "--bar ${EVAL_BAR:-0.85}" in out
+    assert "0.85" in yaml_env()["EVAL_BAR"]
+
+
+def yaml_env():
+    import yaml
+    return yaml.safe_load(WORKFLOW.read_text())["jobs"]["golden-set"]["env"]
+
+
+def test_probe_set_runs_over_the_help_pages(tmp_path, monkeypatch):
+    nb = run_nb("01_probe_set.ipynb", tmp_path, monkeypatch)
+    step5 = next(c.source for c in nb.cells if c.cell_type == "code" and "probe_runs.csv" in c.source)
+    assert "load_help_pages" in step5 and "system=SYSTEM" in step5
+    assert any("help pages" in c.source for c in nb.cells if c.cell_type == "markdown" and "Step 5" in c.source)
+    assert "12 help pages in the system prompt" in outputs(nb)
+    runs = list(csv.DictReader(open(tmp_path / "probe_runs.csv")))
+    assert len(runs) == 100 and all(int(r["input_tokens"]) > 2000 for r in runs)
