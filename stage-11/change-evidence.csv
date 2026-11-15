@@ -1,0 +1,4 @@
+role,question,before_has_support_line,after_has_support_line,after_answer
+student,Can I pay for lessons with a gift card from another shop?,False,True,"The sources do not answer this. If this does not answer your question, contact support at support@northwind.example."
+tutor,Can I teach on my own video tool instead of the Northwind one?,False,False,"To book a tutoring session, open the Northwind app and select **Book a session**. 1. Pick a subject, such as maths or chemistry. 2. Choose a tutor from the list, [nw-01#0]"
+admin,How do I export the company accounts to our tax software?,False,True,"The sources do not answer this. If this does not answer your question, contact support at support@northwind.example."
