@@ -1,26 +1,68 @@
-# Stage 14: lead the room with a cold handoff
+# Handoff: Quillnote help assistant (example)
 
-This stage has no notebook. You hand the project to someone who has never seen it.
+Example filled in from offline mock runs. See `EXAMPLE.md`. Replace every number with your own live run.
 
-## Checklist: files the grader looks for
+The handoff bundle in `stage-14/`:
 
-| File | What it is | Made by |
+| File | What it is |
+| --- | --- |
+| `README.md` | this file |
+| [SPEC.md](SPEC.md) | the current spec with its production boundary |
+| [traces/spans.jsonl](traces/spans.jsonl) | a trace export: 40 traced requests, one JSON line per span |
+| [traces/failing-cases.csv](traces/failing-cases.csv) | every failing case with its trace id |
+| [known-failures.md](known-failures.md) | 4 current failures, each with user impact and a trace link |
+| [peer-run-notes.md](peer-run-notes.md) | notes from one peer who ran the repo cold |
+| [evals-run.txt](evals-run.txt) | the raw output of `make evals` |
+
+## What it does, in two sentences
+
+Quillnote users ask how to use the app; it answers only from the 15 Quillnote help pages and cites them. It may save a
+draft bug report to a local outbox, and only after approval.
+
+## Fresh clone setup and run steps
+
+```
+git clone https://github.com/<you>/atp-builder-kit && cd atp-builder-kit
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env                      # fill in a key, or skip it and put KIT_OFFLINE=1 in front of each command
+make test PYTHON=.venv/bin/python          # the offline tests
+make evals                                 # the golden set in one command
+make evals 2>&1 | tee stage-14/evals-run.txt   # the same, with the raw output saved
+python stage-14/trace_failures.py          # traces every golden and Spanish case to stage-14/traces/
+```
+
+## Where the results are
+
+- `make evals` prints one line per case and a total, and exits 1 if a hard gate fails. Raw output: [evals-run.txt](evals-run.txt).
+- Traces: [traces/spans.jsonl](traces/spans.jsonl) and [traces/failing-cases.csv](traces/failing-cases.csv).
+
+## Expected outcome when the repo is working
+
+The terminal ends with `Hard gates: 20/20 passed` and exit code 0. `trace_failures.py` ends with `25/40 passed`:
+the 15 failures are Spanish questions through the app as is (known failure 1 to 3). `streamlit run app/app.py`
+opens a help box that answers with cited page ids.
+
+| Check | Result on 2026-11-15, offline mock | Bar |
 | --- | --- | --- |
-| `stage-14/README.md` | fresh clone setup and run steps, the exact command `make evals`, where its output lands, the expected outcome, and a section **Decisions, what I measured, and next** | you, from `templates/HANDOFF.md` (replace this checklist) |
-| `stage-14/SPEC.md` | the current spec with its production boundary: in scope, out of scope, and where human approval is required before any drafted action | you, from `templates/SPEC.md` and your `stage-05/PRD.md` |
-| `stage-14/evals-run.txt` | the raw output of `make evals` | `make evals 2>&1 \| tee stage-14/evals-run.txt` |
-| `stage-14/traces/spans.jsonl` | a trace export: every golden case, one JSON line per span | `python stage-14/trace_failures.py` |
-| `stage-14/traces/failing-cases.csv` | each failing golden case with its trace id | `python stage-14/trace_failures.py` |
-| `stage-14/known-failures.md` | 3 or more current failures or sharp edges, each with a user impact note and a trace link | you, from `templates/KNOWN_FAILURES.md` |
-| `stage-14/peer-run-notes.md` | date, who the peer was, every question or blocker, whether they finished, and the README change for each | you, from `templates/PEER_RUN_NOTES.md` |
+| `make evals` hard gates | 20 of 20 | 18 of 20 |
+| Red team pass^3 (stage 13) | 1.00 | 1.00 |
 
-## Steps
+## How it fits together
 
-1. Run `make evals 2>&1 | tee stage-14/evals-run.txt` and `python stage-14/trace_failures.py` (add `KIT_OFFLINE=1` in front if you have no key, but use a live run for the numbers in your README).
-2. Copy the templates and fill in every `<...>`.
-3. Give one peer only the repo link. Write down every question they ask. Fix the README for each one.
-4. In your README, say what handoff choices you made, what you measured from the eval run and the peer run, and the single next improvement.
+A question goes to keyword search over `corpus/`, then to the model with the top 3 pages, then through the output
+check, then to the user with cited page ids.
 
-## Submit
+| Part | File |
+| --- | --- |
+| Answer function | `app/app.py` |
+| Retrieval and roles | `kit/rag.py` |
+| Guardrails | `kit/guardrails.py` |
+| Evals | `evals/` |
+| Spans | `kit/tracing.py` |
 
-The GitHub repo link.
+## Decisions, what I measured, and next
+
+- Handoff choices: one command for evals (`make evals`), raw output saved to a file, every golden and Spanish case traced so each known failure links to its own trace, the production boundary written in the spec.
+- What I measured: `make evals` 20 of 20 hard gates; traces 25 of 40 cases pass (all 15 fails are Spanish); peer run: `<minutes to green, questions asked, from peer-run-notes.md>`.
+- Next improvement to the handoff: `<the one change the peer run points to>`.

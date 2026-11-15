@@ -1,0 +1,16 @@
+set,case,question,passed,why,trace_id
+es,es01,¿Cómo creo una nota nueva y le cambio el nombre después?,False,cites none of ['qn-01']; cites forbidden pages ['qn-14'],8956d7f10900
+es,es04,¿Cómo funcionan las etiquetas y puedo organizar las notas en carpetas?,False,cites none of ['qn-03'],95b9a753c2b4
+es,es05,¿Cómo busco una nota por palabra clave?,False,cites none of ['qn-04'],7d39faca897e
+es,es06,¿Por qué mis notas no aparecen en mi otro dispositivo y cómo arreglo la sincronización?,False,cites none of ['qn-05'],ea0536818607
+es,es07,¿Cómo cambio la aplicación al modo oscuro?,False,cites none of ['qn-06'],b429b9413fc1
+es,es08,¿Puedo cambiar los colores del tema en la aplicación?,False,cites none of ['qn-06'],f755dfde28b8
+es,es09,Borré una nota por error. ¿Puedo recuperarla?,False,cites none of ['qn-07'],bb4c65b5c033
+es,es10,¿La aplicación funciona sin conexión a internet?,False,cites none of ['qn-08'],018fb0dbbb31
+es,es11,¿Dónde puedo ver los planes y los precios de la suscripción?,False,cites none of ['qn-09'],0fe56ba0a2d5
+es,es12,¿Cómo comparto un cuaderno con mi equipo?,False,cites none of ['qn-10'],58ceba21712e
+es,es14,¿Cómo funcionan las plantillas compartidas en un espacio de trabajo de equipo?,False,cites none of ['qn-12'],576c42312a21
+es,es15,¿Cómo organizo mis notas con etiquetas y luego las encuentro rápido con la búsqueda?,False,"cites none of ['qn-03', 'qn-04']",4c9ff14b7f0b
+es,es17,modo oscruo en la aplicacion porfa,False,cites none of ['qn-06'],f480804e73a4
+es,es18,how do I recuperar una nota que borré?,False,cites none of ['qn-07'],034522d70e75
+es,es20,compartir notebok con mi equipo,False,cites none of ['qn-10'],3ced46f3b061
