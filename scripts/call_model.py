@@ -1,11 +1,16 @@
 # The same help-assistant call as notebook 01, but with plain HTTP (requests) to the Gemini REST API.
 # Run:  python scripts/call_model.py        Offline (no network):  KIT_OFFLINE=1 python scripts/call_model.py
 import csv
+import time
 import json
 import os
 from pathlib import Path
 
 import requests
+
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from kit.llm import get_secret  # noqa: E402
 
 # Settings you can change.
 MODEL = "gemini-3.5-flash-lite"
@@ -22,10 +27,20 @@ body = {
 
 
 def call_once():
+    start = time.perf_counter()
+    data = _call()
+    data["_latency_s"] = round(time.perf_counter() - start, 3)
+    return data
+
+
+def _call():
     # Offline mode reads a saved response instead of calling the API.
     if os.environ.get("KIT_OFFLINE") == "1":
         return json.loads((HERE / "sample_response.json").read_text())
-    key = os.environ["GEMINI_API_KEY"]
+    # Fix for the KeyError: read the key from the environment OR the untracked .env file, with a clear message.
+    key = get_secret("GEMINI_API_KEY")
+    if not key:
+        raise SystemExit("No GEMINI_API_KEY. Put it in .env (git ignores it) or export it, then run again.")
     resp = requests.post(URL, headers={"x-goog-api-key": key}, json=body, timeout=60)
     resp.raise_for_status()
     return resp.json()
@@ -44,6 +59,7 @@ def summarise(data):
         "input_tokens": usage["promptTokenCount"],
         "output_tokens": usage.get("candidatesTokenCount", 0),
         "finish_reason": cand["finishReason"],
+        "latency_s": data.get("_latency_s", 0),
     }
 
 
@@ -51,7 +67,7 @@ print(summarise(data))
 
 # Run 10 times and save each result as a row in runs.csv.
 with open(OUT, "w", newline="") as f:
-    writer = csv.DictWriter(f, fieldnames=["run", "input_tokens", "output_tokens", "finish_reason", "text"])
+    writer = csv.DictWriter(f, fieldnames=["run", "input_tokens", "output_tokens", "finish_reason", "latency_s", "text"])
     writer.writeheader()
     for run in range(1, 11):
         writer.writerow({"run": run, **summarise(call_once())})

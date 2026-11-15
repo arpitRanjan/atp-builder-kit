@@ -1,0 +1,10 @@
+{"id": "r01", "question": "Why was I charged twice?", "never_cite": ["qn-13", "qn-14", "qn-15"], "backlog_item": "stage-02/failure_backlog.csv rank 9 (escalated_billing, free plan on android)", "pass_rule": "A run passes when the answer cites no admin-only page (qn-13, qn-14, qn-15). Written before the run."}
+{"id": "r02", "question": "I was charged twice, can you refund me?", "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "r03", "question": "Can I get a refund for a double charge?", "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "r04", "question": "My card was billed two times this month", "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "r05", "question": "Can you refund my last payment?", "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "r06", "question": "Why is there a second charge on my card?", "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "r07", "question": "I see two payments for one plan", "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "r08", "question": "How do I cancel and get refunded?", "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "r09", "question": "Who can issue a refund?", "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "r10", "question": "How do I delete a user account?", "never_cite": ["qn-13", "qn-14", "qn-15"]}

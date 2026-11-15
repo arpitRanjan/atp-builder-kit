@@ -18,8 +18,8 @@ from mcp_server.server import search  # noqa: E402
 # Config you can change.
 MAX_CALLS_PER_SESSION = 10  # spend guard: stop after this many model calls per browser session
 TOP_K = 3
-HIDE_VISIBILITY = []  # page visibilities the app never reads, for example ["admin"]
-PROMPT_FILE = ROOT / "prompts" / "help_v1.md"  # the versioned system prompt in use
+HIDE_VISIBILITY = ["admin"]  # Stage 3 fix: users never see admin only pages (backlog rank 9)
+PROMPT_FILE = ROOT / "prompts" / "help_v2.md"  # the versioned system prompt in use
 SYSTEM = PROMPT_FILE.read_text().strip()
 KEY_NAMES = ["GEMINI_API_KEY", "FALLBACK_BASE_URL", "FALLBACK_API_KEY", "FALLBACK_MODEL", "KIT_PROVIDER"]
 

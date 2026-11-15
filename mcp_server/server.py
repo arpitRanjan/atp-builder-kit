@@ -58,9 +58,10 @@ mcp = MCPServer("quillnote-docs")
 
 @mcp.tool(
     description=(
-        "Search the Quillnote help pages by keywords. Read-only: it never changes anything. "
-        "Returns up to top_k matching pages, best first, each with its page id, title, visibility "
-        "(public, team or admin) and a short snippet. Cite the page id when you use a result."
+        "Find Quillnote help pages that answer a user's how-to question. Pass the question in plain words. "
+        "Read-only: it never changes anything and makes no network calls. Returns up to top_k pages, best first, "
+        "each with page id, title, visibility (public, team or admin) and a snippet. "
+        "Do not show admin pages to end users. Cite the page id, like [qn-02], when you use a result."
     ),
     annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False),
 )
