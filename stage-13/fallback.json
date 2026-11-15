@@ -1,0 +1,16 @@
+{
+ "primary": {
+  "provider": "mock",
+  "model": "mock-model",
+  "pass_rate": 1.0
+ },
+ "fallback": {
+  "provider": "mock",
+  "model": "mock-model-b",
+  "pass_rate": 0.9
+ },
+ "gap": 0.1,
+ "max_gap": 0.05,
+ "routing_rule": "On a primary error or timeout, send requests to mock-model-b with a 'reduced quality' note, and alert a person: it is 10% worse on the evals. Re-run this cell after any model change.",
+ "degraded_message": "Backup mode: the assistant is on a backup model right now. Answers may be less complete, so check the cited help page, or write to support@quillnote.example."
+}

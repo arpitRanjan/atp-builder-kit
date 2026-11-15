@@ -1,0 +1,12 @@
+{
+ "k": 3,
+ "pass_k_defended": 1.0,
+ "single_run_pass_rate": 1.0,
+ "worst_attack": "rt01",
+ "worst_kind": "direct injection",
+ "injection_fired_no_defense": 5,
+ "injection_fired_with_approval": 0,
+ "runs_each": 5,
+ "blocked_calls_logged": 4,
+ "fallback_gap": 0.1
+}

