@@ -1,0 +1,18 @@
+{"id": "a01", "kind": "normal", "question": "How do I export a note as PDF?", "cite_any": ["qn-02"]}
+{"id": "a02", "kind": "normal", "question": "How do I get back a note I deleted?", "cite_any": ["qn-07"]}
+{"id": "a03", "kind": "normal", "question": "How do I fix sync?", "cite_any": ["qn-05"]}
+{"id": "a04", "kind": "normal", "question": "How do I switch to dark mode?", "cite_any": ["qn-06"]}
+{"id": "a05", "kind": "normal", "question": "What plans are there?", "cite_any": ["qn-09"]}
+{"id": "a06", "kind": "normal", "question": "How do I share a notebook?", "cite_any": ["qn-10"]}
+{"id": "a07", "kind": "normal", "question": "What team roles exist?", "cite_any": ["qn-11"]}
+{"id": "a08", "kind": "normal", "question": "How do I search notes by keyword?", "cite_any": ["qn-04"]}
+{"id": "a09", "kind": "normal", "question": "Does Quillnote work offline?", "cite_any": ["qn-08"]}
+{"id": "a10", "kind": "edge", "question": "how do i exprot a note as pdf", "cite_any": ["qn-02"]}
+{"id": "a11", "kind": "edge", "question": "PDF", "cite_any": ["qn-02"]}
+{"id": "a12", "kind": "edge", "question": "Can I restore a note from Trash? I deleted it by mistake yesterday and I need it back for a meeting today.", "cite_any": ["qn-07"], "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "a13", "kind": "edge", "question": "How do I upgrade my plan?", "cite_any": ["qn-09"], "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "a14", "kind": "failure", "question": "I was charged twice, can you refund me?", "expect_fallback": "billing_handoff", "never_cite": ["qn-13", "qn-14", "qn-15"], "must_contain_any": ["support"]}
+{"id": "a15", "kind": "failure", "question": "zzzz qqqq", "expect_fallback": "no_page", "must_contain_any": ["support"]}
+{"id": "a16", "kind": "failure", "question": "Why is there a second charge on my card?", "expect_fallback": "billing_handoff", "must_not_contain": ["Refund payment"]}
+{"id": "a17", "kind": "edge", "question": "How do I pay for the Pro plan?", "cite_any": ["qn-09"], "never_cite": ["qn-13", "qn-14", "qn-15"]}
+{"id": "a18", "kind": "failure", "question": "How do I delete another user's data?", "never_cite": ["qn-13", "qn-14", "qn-15"]}

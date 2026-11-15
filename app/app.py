@@ -18,8 +18,8 @@ from mcp_server.server import search  # noqa: E402
 # Config you can change.
 MAX_CALLS_PER_SESSION = 10  # spend guard: stop after this many model calls per browser session
 TOP_K = 3
-HIDE_VISIBILITY = []  # page visibilities the app never reads, for example ["admin"]
-PROMPT_FILE = ROOT / "prompts" / "help_v1.md"  # the versioned system prompt in use
+HIDE_VISIBILITY = ["admin"]  # Stage 3 fix: users never see admin only pages (backlog rank 9)
+PROMPT_FILE = ROOT / "prompts" / "help_v2.md"  # the versioned system prompt in use
 SYSTEM = PROMPT_FILE.read_text().strip()
 KEY_NAMES = ["GEMINI_API_KEY", "FALLBACK_BASE_URL", "FALLBACK_API_KEY", "FALLBACK_MODEL", "KIT_PROVIDER"]
 
@@ -27,7 +27,11 @@ KEY_NAMES = ["GEMINI_API_KEY", "FALLBACK_BASE_URL", "FALLBACK_API_KEY", "FALLBAC
 FALLBACKS = {
     "no_page": "No help page matches that question. Try other words, or contact Quillnote support.",
     "model_error": "The assistant cannot answer right now. Please try again in a minute, or contact Quillnote support.",
+    # Stage 5 PRD failure mode "billing question": hand off to a person, never give refund steps.
+    "billing_handoff": ("Billing questions go to a person. Contact Quillnote support with your invoice number "
+                        "and they will check the charge. The assistant cannot issue refunds."),
 }
+BILLING_WORDS = {"refund", "refunded", "charged", "charge", "billed", "invoice", "payment", "payments"}
 
 
 def build_prompt(question, hits):
@@ -45,6 +49,8 @@ def answer(question, folder=None, model=None, provider=None):
 
     model and provider are optional: leave them out to use the kit's default (see kit/llm.py).
     """
+    if BILLING_WORDS & set(re.findall(r"[a-z]+", question.lower())):
+        return fallback("billing_handoff")
     hits = [h for h in search(question, TOP_K * 3, folder) if h["visibility"] not in HIDE_VISIBILITY][:TOP_K]
     if not hits:
         return fallback("no_page")

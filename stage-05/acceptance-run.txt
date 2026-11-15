@@ -1,0 +1,28 @@
+Acceptance run
+Target: http://127.0.0.1:8765
+Date (UTC): 2026-11-15 11:18
+Model: mock-model
+Cases: stage-05/evals/acceptance.jsonl (18 cases: edge 5, failure 4, normal 9)
+Ship bar: 90%
+
+pass a01 [normal]
+pass a02 [normal]
+pass a03 [normal]
+pass a04 [normal]
+pass a05 [normal]
+pass a06 [normal]
+pass a07 [normal]
+pass a08 [normal]
+pass a09 [normal]
+pass a10 [edge]
+pass a11 [edge]
+pass a12 [edge]
+pass a13 [edge]
+pass a14 [failure]
+pass a15 [failure]
+pass a16 [failure]
+pass a17 [edge]
+pass a18 [failure]
+
+By kind: edge 5/5, failure 4/4, normal 9/9
+Pass rate 100% (18/18), ship bar 90%: SHIP

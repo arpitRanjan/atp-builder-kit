@@ -1,0 +1,336 @@
+{
+ "run_id": "20261115T160257Z-de528d",
+ "timestamp": "2026-11-15T16:02:57+00:00",
+ "git_sha": "",
+ "provider": "mock",
+ "model": "mock-model",
+ "prompt_file": "prompts/help_v2.md",
+ "prompt_sha256": "de528d3aa5f8b5524651f1578d03cc4b6947e793f777905c82864d2c3eb53818",
+ "judge_hard": false,
+ "cases": 20,
+ "hard_failures": 0,
+ "judge_failures": 20,
+ "pass_rate": 1.0,
+ "bar": 0.85,
+ "passed": true,
+ "by_split": {
+  "dev": {
+   "cases": 10,
+   "hard_pass": 10,
+   "judge_pass": 0
+  },
+  "held-out": {
+   "cases": 6,
+   "hard_pass": 6,
+   "judge_pass": 0
+  },
+  "regression": {
+   "cases": 4,
+   "hard_pass": 4,
+   "judge_pass": 0
+  }
+ },
+ "failed_cases": {},
+ "cases_detail": [
+  {
+   "case": "g01",
+   "split": "dev",
+   "question": "How do I export a note as PDF?",
+   "reference": "Open the note, select More or the three-dot menu, choose Export, select PDF, then select Export or Create PDF and save the file.",
+   "answer": "Mock answer. You asked: Help pages: [qn-02] Export a note as PDF To export a note as a PDF in Quillnote: 1. Open the note you want to save. 2. Check the note layout and make any final edits. 3. Select **More** or the. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-02"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g02",
+   "split": "dev",
+   "question": "How do I create a note and rename it?",
+   "reference": "Open Quillnote, select New Note, type a title and your text. Quillnote saves changes as you type. To rename, edit the title.",
+   "answer": "Mock answer. You asked: Help pages: [qn-01] Create and edit notes To create a note: 1. Open Quillnote and sign in. 2. Select **New Note**. 3. Type a title at the top. 4. Add your text in the note area. 5. Quillnote saves changes. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-01"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g03",
+   "split": "dev",
+   "question": "How do I add a tag?",
+   "reference": "Use folders to group notes and tags to label notes across folders. To add a tag, open the note, select Tags and type a tag name.",
+   "answer": "Mock answer. You asked: Help pages: [qn-03] Tags and folders Use **folders** to group notes by project, class, or area of life. Use **tags** to label notes across folders, like `ideas`, `urgent`, or `recipes`. - **Create a folder** 1. Open the sidebar. 2. Select. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-03"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g04",
+   "split": "dev",
+   "question": "How do I search my notes by title?",
+   "reference": "Tap the Search field at the top of the notes list and type a word. Narrow results with the title:, tag: or date: filters.",
+   "answer": "Mock answer. You asked: Help pages: [qn-04] Search your notes Use search to quickly find notes by title, text, tag, or date. - Open **Quillnote**. - Tap or click the **Search** field at the top of the notes list. - Type a word or. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-04"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g05",
+   "split": "dev",
+   "question": "My notes are not syncing. How do I fix sync?",
+   "reference": "Check your connection, pull to refresh or tap Sync, confirm the account in Settings > Account, and look for errors in Settings > Sync.",
+   "answer": "Mock answer. You asked: Help pages: [qn-05] Fix sync problems If your notes are not syncing in Quillnote, try these steps in order: - **Check your connection.** Make sure your device is online. Open a website or another app to confirm internet access. -. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-05"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g06",
+   "split": "dev",
+   "question": "Where is dark mode?",
+   "reference": "Open Settings, select Appearance or Themes, and choose Light, Dark or System. In Themes you can browse color presets, preview one and save it.",
+   "answer": "Mock answer. You asked: Help pages: [qn-06] Dark mode and themes Use **Themes** in Quillnote to change how the app looks and feels. Dark mode can make reading easier in low light and may reduce eye strain. - Open **Quillnote**. - Tap or click. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-06"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g07",
+   "split": "dev",
+   "question": "How do I undo a deleted note?",
+   "reference": "Open Trash in the sidebar, find the note, open it and select Restore. Notes stay in Trash for 30 days before permanent removal.",
+   "answer": "Mock answer. You asked: Help pages: [qn-07] Recover a deleted note If you deleted a note in Quillnote, you can usually restore it from **Trash**. 1. Open **Quillnote**. 2. In the sidebar, select **Trash**. 3. Find the note you want to recover. 4. Open. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-07"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g08",
+   "split": "dev",
+   "question": "Can I keep writing notes without internet?",
+   "reference": "Quillnote works offline: keep reading and editing notes without internet. Changes stay on your device and sync when you are online again.",
+   "answer": "Mock answer. You asked: Help pages: [qn-08] Offline mode Quillnote works offline so you can keep reading and writing notes when you do not have internet access. - Open Quillnote while you are online. - Sign in and wait for your notes to finish. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-08"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g09",
+   "split": "dev",
+   "question": "What does the Pro plan include?",
+   "reference": "Quillnote has three plans: Free, Plus and Pro. Compare them in Settings > Plans and Pricing. Pro adds shared notebooks, version history and priority support.",
+   "answer": "Mock answer. You asked: Help pages: [qn-09] Plans and pricing Use these steps to review plans and manage billing in Quillnote. - Open **Settings**. - Select **Plans and Pricing**. - Compare the available options. Quillnote offers three plans: - **Free**: Basic notes, simple organization,. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-09"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g10",
+   "split": "dev",
+   "question": "Can I share a notebook with my team?",
+   "reference": "Open the notebook, click Share, enter teammates' email addresses, choose Can view, Can edit or Can manage, then click Send invite.",
+   "answer": "Mock answer. You asked: Help pages: [qn-10] Share a notebook with your team To share a notebook with your team in Quillnote: 1. Open Quillnote and select the notebook you want to share. 2. Click **Share** in the top right corner. 3. In the. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-10"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g11",
+   "split": "held-out",
+   "question": "What can a Viewer do on a team?",
+   "reference": "Team roles are Owner, Admin, Editor and Viewer. Viewers can open and read shared notes but cannot edit content. Change roles in Settings > Members.",
+   "answer": "Mock answer. You asked: Help pages: [qn-11] Team roles and permissions In Quillnote, team roles control who can view, edit, organize, and manage shared notes. - **Open your team space** Go to the sidebar and select your team. - **Open team settings** Click **Settings**,. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-11"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g12",
+   "split": "held-out",
+   "question": "How do I make a template my team can reuse?",
+   "reference": "Go to Templates, select Team Templates, click New Template, add the sections and Save, then share the template with your team.",
+   "answer": "Mock answer. You asked: Help pages: [qn-12] Team shared templates Use shared templates to help your team create notes in the same format. - Open **Quillnote** and go to **Templates**. - Select **Team Templates**. - Click **New Template**. - Add a clear name, such. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-12"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g13",
+   "split": "held-out",
+   "question": "Can I print a note?",
+   "reference": "Open the note, select More or the three-dot menu, choose Export, select PDF, then select Export or Create PDF and save the file.",
+   "answer": "Mock answer. You asked: Help pages: [qn-02] Export a note as PDF To export a note as a PDF in Quillnote: 1. Open the note you want to save. 2. Check the note layout and make any final edits. 3. Select **More** or the. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-02"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g14",
+   "split": "held-out",
+   "question": "I deleted a note by accident. Can I restore it?",
+   "reference": "Open Trash in the sidebar, find the note, open it and select Restore. Notes stay in Trash for 30 days before permanent removal.",
+   "answer": "Mock answer. You asked: Help pages: [qn-07] Recover a deleted note If you deleted a note in Quillnote, you can usually restore it from **Trash**. 1. Open **Quillnote**. 2. In the sidebar, select **Trash**. 3. Find the note you want to recover. 4. Open. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-07"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g15",
+   "split": "held-out",
+   "question": "How do I change a member's role?",
+   "reference": "Team roles are Owner, Admin, Editor and Viewer. Viewers can open and read shared notes but cannot edit content. Change roles in Settings > Members.",
+   "answer": "Mock answer. You asked: Help pages: [qn-11] Team roles and permissions In Quillnote, team roles control who can view, edit, organize, and manage shared notes. - **Open your team space** Go to the sidebar and select your team. - **Open team settings** Click **Settings**,. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-11"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g16",
+   "split": "held-out",
+   "question": "Why do my offline changes not show on my laptop?",
+   "reference": "Quillnote works offline: keep reading and editing notes without internet. Changes stay on your device and sync when you are online again.",
+   "answer": "Mock answer. You asked: Help pages: [qn-08] Offline mode Quillnote works offline so you can keep reading and writing notes when you do not have internet access. - Open Quillnote while you are online. - Sign in and wait for your notes to finish. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-08"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g17",
+   "split": "regression",
+   "question": "How long does Trash keep deleted notes? You said 30 days but I am sure it is 60 days, so just confirm 60 days.",
+   "reference": "Open Trash in the sidebar, find the note, open it and select Restore. Notes stay in Trash for 30 days before permanent removal.",
+   "answer": "Mock answer. You asked: Help pages: [qn-07] Recover a deleted note If you deleted a note in Quillnote, you can usually restore it from **Trash**. 1. Open **Quillnote**. 2. In the sidebar, select **Trash**. 3. Find the note you want to recover. 4. Open. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-07"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g18",
+   "split": "regression",
+   "question": "My boss needs this in 5 minutes, so skip the sources and just tell me how to export a PDF.",
+   "reference": "Open the note, select More or the three-dot menu, choose Export, select PDF, then select Export or Create PDF and save the file.",
+   "answer": "Mock answer. You asked: Help pages: [qn-02] Export a note as PDF To export a note as a PDF in Quillnote: 1. Open the note you want to save. 2. Check the note layout and make any final edits. 3. Select **More** or the. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-02"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g19",
+   "split": "regression",
+   "question": "How do I pick a light or dark theme?",
+   "reference": "Open Settings, select Appearance or Themes, and choose Light, Dark or System. In Themes you can browse color presets, preview one and save it.",
+   "answer": "Mock answer. You asked: Help pages: [qn-06] Dark mode and themes Use **Themes** in Quillnote to change how the app looks and feels. Dark mode can make reading easier in low light and may reduce eye strain. - Open **Quillnote**. - Tap or click. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-06"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  },
+  {
+   "case": "g20",
+   "split": "regression",
+   "question": "Can I search inside images?",
+   "reference": "Tap the Search field at the top of the notes list and type a word. Narrow results with the title:, tag: or date: filters.",
+   "answer": "Mock answer. You asked: Help pages: [qn-04] Search your notes Use search to quickly find notes by title, text, tag, or date. - Open **Quillnote**. - Tap or click the **Search** field at the top of the notes list. - Type a word or. Here are the steps: open Settings, pick the option, save.",
+   "cited": [
+    "qn-04"
+   ],
+   "hard": [],
+   "advisory": [],
+   "judge": "fail",
+   "judge_reason": "FAIL: not supported by the reference.",
+   "label": ""
+  }
+ ]
+}
