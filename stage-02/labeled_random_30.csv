@@ -1,0 +1,31 @@
+trace_id,segment,channel,outcome,latency_ms,message_redacted,output_redacted,failure_label
+t0183,team,android,resolved,1266,How do I add a tag?,Here is how: How do I add a tag?...,ok
+t0266,team,ios,escalated,5353,How do I add a tag?,Here is how: How do I add a tag?...,escalated_no_answer
+t0104,free,web,escalated,8025,"Can I share a notebook with my team? My details: [PHONE], [EMAIL]",Here is how: Can I share a notebook with my...,escalated_no_answer
+t0459,pro,web,resolved,6767,"How do I add a tag? My details: [CARD], [CARD]",Here is how: How do I add a tag? My details...,ok
+t0508,pro,ios,resolved,3949,My notes stopped syncing My details: [CARD],Here is how: My notes stopped syncing My de...,ok
+t0457,free,web,escalated,8191,My notes stopped syncing,Here is how: My notes stopped syncing...,escalated_no_answer
+t0580,team,web,escalated,3355,"Why was I charged twice? My details: [PHONE], [EMAIL_SPELLED]",Here is how: Why was I charged twice? My de...,escalated_billing
+t0375,pro,web,resolved,669,"How do I add a tag? My details: [EMAIL], [PHONE_DOTS]",Here is how: How do I add a tag? My details...,ok
+t0171,pro,web,resolved,1875,How do I export a note as PDF?,Here is how: How do I export a note as PDF?...,ok
+t0004,pro,web,escalated,2129,The app crashes when I open a big note My details: [EMAIL],Here is how: The app crashes when I open a ...,escalated_no_answer
+t0482,pro,android,resolved,6719,"How do I export a note as PDF? My details: [CARD], [CARD]",Here is how: How do I export a note as PDF?...,ok
+t0388,free,android,resolved,7076,How do I add a tag?,Here is how: How do I add a tag?...,ok
+t0370,team,ios,resolved,7221,How do I add a tag?,Here is how: How do I add a tag?...,ok
+t0342,pro,ios,resolved,3447,How do I undo a deleted note? My details: [PHONE_DOTS],Here is how: How do I undo a deleted note? ...,ok
+t0379,pro,web,resolved,520,How do I undo a deleted note?,Here is how: How do I undo a deleted note?...,ok
+t0088,free,ios,resolved,4483,"The app crashes when I open a big note My details: [EMAIL_SPELLED], [EMAIL_SPELLED]",Here is how: The app crashes when I open a ...,ok
+t0316,pro,android,resolved,751,My notes stopped syncing,Here is how: My notes stopped syncing...,ok
+t0413,team,android,failed,6998,How do I export a note as PDF? My details: [CARD],"Sorry, something went wrong.",error_reply
+t0302,team,android,resolved,1693,My notes stopped syncing,Here is how: My notes stopped syncing...,ok
+t0174,free,android,escalated,8105,How do I add a tag? My details: [PHONE],Here is how: How do I add a tag? My details...,escalated_no_answer
+t0537,team,ios,resolved,5821,Can I share a notebook with my team?,Here is how: Can I share a notebook with my...,ok
+t0237,pro,android,resolved,909,"Can I search inside images? My details: [PHONE_DOTS], [PHONE_DOTS]",Here is how: Can I search inside images? My...,ok
+t0317,team,android,failed,1618,Can I search inside images?,"Sorry, something went wrong.",error_reply
+t0117,team,web,resolved,2165,Can I share a notebook with my team?,Here is how: Can I share a notebook with my...,ok
+t0281,pro,ios,escalated,7162,Can I search inside images?,Here is how: Can I search inside images?...,escalated_no_answer
+t0260,pro,ios,failed,4146,"How do I undo a deleted note? My details: [EMAIL], [EMAIL]","Sorry, something went wrong.",error_reply
+t0566,pro,ios,resolved,8918,Can I share a notebook with my team? My details: [PHONE_DOTS],Here is how: Can I share a notebook with my...,slow_answer
+t0033,free,web,escalated,4214,"How do I add a tag? My details: [EMAIL], [PHONE_DOTS]",Here is how: How do I add a tag? My details...,escalated_no_answer
+t0075,free,web,escalated,7044,Why was I charged twice?,Here is how: Why was I charged twice?...,escalated_billing
+t0543,pro,web,escalated,1975,"Can I search inside images? My details: [PHONE_DOTS], [PHONE]",Here is how: Can I search inside images? My...,escalated_no_answer

@@ -1,0 +1,31 @@
+trace_id,segment,channel,outcome,latency_ms,message_redacted,output_redacted,failure_label
+t0456,free,android,resolved,4280,"Where is dark mode? My details: [CARD], [CARD]",Here is how: Where is dark mode? My details...,ok
+t0141,free,ios,resolved,2002,How do I undo a deleted note?,Here is how: How do I undo a deleted note?...,ok
+t0565,free,android,escalated,3846,Why was I charged twice?,Here is how: Why was I charged twice?...,escalated_billing
+t0481,free,web,failed,4886,How do I undo a deleted note?,"Sorry, something went wrong.",error_reply
+t0420,free,android,escalated,4513,"Where is dark mode? My details: [PHONE_DOTS], [CARD]",Here is how: Where is dark mode? My details...,escalated_no_answer
+t0447,free,ios,resolved,3476,"How do I export a note as PDF? My details: [PHONE], [EMAIL_SPELLED]",Here is how: How do I export a note as PDF?...,ok
+t0331,free,android,resolved,3216,"Can I search inside images? My details: [EMAIL], [PHONE]",Here is how: Can I search inside images? My...,ok
+t0109,free,web,escalated,756,"How do I export a note as PDF? My details: [EMAIL], [PHONE]",Here is how: How do I export a note as PDF?...,escalated_no_answer
+t0403,free,android,escalated,2579,How do I undo a deleted note? My details: [EMAIL_SPELLED],Here is how: How do I undo a deleted note? ...,escalated_no_answer
+t0487,free,ios,escalated,2458,How do I export a note as PDF?,Here is how: How do I export a note as PDF?...,escalated_no_answer
+t0588,pro,ios,resolved,1003,"How do I add a tag? My details: [EMAIL], [CARD]",Here is how: How do I add a tag? My details...,ok
+t0058,pro,web,resolved,371,Can I share a notebook with my team?,Here is how: Can I share a notebook with my...,ok
+t0254,pro,ios,resolved,3915,The app crashes when I open a big note,Here is how: The app crashes when I open a ...,ok
+t0552,pro,web,resolved,8546,The app crashes when I open a big note My details: [EMAIL],Here is how: The app crashes when I open a ...,slow_answer
+t0351,pro,ios,escalated,4396,Why was I charged twice?,Here is how: Why was I charged twice?...,escalated_billing
+t0265,pro,android,resolved,4306,How do I undo a deleted note?,Here is how: How do I undo a deleted note?...,ok
+t0389,pro,ios,resolved,2615,Where is dark mode?,Here is how: Where is dark mode?...,ok
+t0021,pro,ios,resolved,4347,Can I share a notebook with my team? My details: [EMAIL],Here is how: Can I share a notebook with my...,ok
+t0560,pro,ios,resolved,3532,How do I export a note as PDF?,Here is how: How do I export a note as PDF?...,ok
+t0283,pro,ios,resolved,8016,"How do I undo a deleted note? My details: [CARD], [CARD]",Here is how: How do I undo a deleted note? ...,slow_answer
+t0085,team,android,resolved,1272,How do I undo a deleted note?,Here is how: How do I undo a deleted note?...,ok
+t0472,team,web,escalated,8489,"My notes stopped syncing My details: [EMAIL], [PHONE]",Here is how: My notes stopped syncing My de...,escalated_no_answer
+t0209,team,web,resolved,6608,How do I undo a deleted note?,Here is how: How do I undo a deleted note?...,ok
+t0193,team,android,failed,8377,How do I add a tag? My details: [CARD],"Sorry, something went wrong.",error_reply
+t0599,team,android,failed,2638,Where is dark mode? My details: [EMAIL_SPELLED],"Sorry, something went wrong.",error_reply
+t0505,team,ios,resolved,6943,How do I export a note as PDF?,Here is how: How do I export a note as PDF?...,ok
+t0526,team,web,failed,3847,How do I export a note as PDF?,"Sorry, something went wrong.",error_reply
+t0329,team,android,resolved,2044,The app crashes when I open a big note My details: [CARD],Here is how: The app crashes when I open a ...,ok
+t0284,team,android,failed,4425,Where is dark mode?,"Sorry, something went wrong.",error_reply
+t0266,team,ios,escalated,5353,How do I add a tag?,Here is how: How do I add a tag?...,escalated_no_answer

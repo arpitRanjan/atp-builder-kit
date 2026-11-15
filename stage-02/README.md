@@ -1,48 +1,36 @@
-# Stage 2: a ranked failure backlog from your traces
+# Stage 2: ranked failure backlog (EXAMPLE, offline mock model)
 
-Submit a notebook link or the GitHub repo folder for `stage-02/`. If you have no repo yet (the fork comes
-in Chapter 3), submit links to both notebooks and keep the README sections in Step 13 of the trace notebook.
+Notebooks: [02_sql_duckdb.ipynb](02_sql_duckdb.ipynb), [02_traces_pandas.ipynb](02_traces_pandas.ipynb).
+Files: [failure_backlog.csv](failure_backlog.csv), [labeled_random_30.csv](labeled_random_30.csv),
+[labeled_stratified_30.csv](labeled_stratified_30.csv). Stage 1 input: `stage-01/probe_runs.csv`.
 
-## Checklist
-
-| File in `stage-02/` | What the brief asks for | Made by |
-| --- | --- | --- |
-| `02_sql_duckdb.ipynb` | Five queries with real outputs, and the planted trap: wrong number first, corrected number after, and a note on the cause | `notebooks/02_sql_duckdb.ipynb` (queries in Steps 3 to 7, trap in Step 8) |
-| `02_traces_pandas.ipynb` | Load and clean traces in pandas; failure rate for two named segments with numerator and denominator | `notebooks/02_traces_pandas.ipynb`, Steps 2 to 4 |
-| (same notebook) | A named failure taxonomy, and two labeled samples: random 30 and stratified 30 | Steps 5 and 6 |
-| (same notebook) | A PII redaction pass on the sampled traces, with caught and missed counts | Steps 7 and 8 |
-| `labeled_random_30.csv`, `labeled_stratified_30.csv` | The two labeled samples, redacted text only | Step 9 |
-| `failure_backlog.csv` | Ranked rows with trace_ids, failure label, layer guess, severity, how to check the fix, and a `from_stage1_probe` column | Steps 10 to 12 |
-| `README.md` | Sections **Decisions**, **What I measured**, **What I would do next**, and a retention and access table | you, from the template below |
-
-## Add your Stage 1 probe failures
-
-Step 11 reads your `stage-01/probe_runs.csv` (written by `01_probe_set`). In Colab, upload that file with the
-Files panel. It lands in `/content`, and the notebook looks there too. The cell prints which file it used.
-If it finds none, it prints every place it looked. Each failed probe becomes a backlog row with
-`from_stage1_probe = yes`.
-
-## Labels and PII
-
-- `suggest_label` is only a starting rule. Read every sampled row and put your corrections in `OVERRIDES`.
-- `layer_guess`, `severity` and `how_to_check_fix` start from the taxonomy. Edit any you disagree with.
-- Only redacted text is saved. A row whose redaction misses true PII is saved as `[WITHHELD: redaction missed PII]`.
-  Never commit raw trace text.
-
-## README template (replace the checklist above with this, filled in)
-
-```
 ## Decisions
+
+- I name two segments: **team plan on android** and **all other traffic**. The team android cohort fails far more often, so its error replies are rank 1 in the backlog.
+- I use a taxonomy of five trace labels (ok, error_reply, escalated_billing, escalated_no_answer, slow_answer) and three probe labels for my Stage 1 failures.
+- I fix the billing escalations next (rank 9, `escalated_billing`): a money question that reaches a human is high severity, and the help pages hold an admin only refund page that users must never be shown.
+- I save only redacted text. The first regex pass missed phone numbers with dots and spelled out emails, so I added two patterns before saving anything.
+
 ## What I measured
+
+- DuckDB planted trap: joining events to every `users` row gave 14,348 events; one row per user gives 11,462, the true count. 189 extra plan rows caused the fan out.
+- Failure rate, team plan on android: 38 failed of 66 traces (57.6 percent). All other traffic: 54 failed of 493 (11.0 percent). 559 traces after removing 15 duplicates, 12 empty outputs and 29 test users.
+- Labeled samples: random 30 and stratified 30 (10 per plan), 59 distinct traces.
+- PII on the sampled traces: first pass caught 34 of 48 planted values and missed 14; second pass caught 48 and missed 0. On all 559 traces the second pass caught 407 and missed 0.
+- Backlog: 32 ranked rows, 8 of them from my own Stage 1 probe failures (`from_stage1_probe = yes`).
+
 ## What I would do next
+
+- Fix rank 9 (billing) in Stage 3 and re-test it with 10 billing questions x 5 runs.
+- Find out why team android traces fail: replay rank 1 traces once tracing is in place.
+- Review every suggested label by hand and record changes in `OVERRIDES`.
+
 ## Retention and access
+
 | Where traces live | What is stored | How long I keep it | Who can access it | How it is deleted or cleared |
 | --- | --- | --- | --- | --- |
-| data/traces.jsonl in the kit | | | | |
-| the notebook runtime (Colab or local) | | | | |
-| stage-02/*.csv in my GitHub repo | | | | |
-| stage-01/probe_runs.csv | | | | |
-| the model provider's logs | | | | |
-```
-
-Add a row for every other place your traces live.
+| `data/traces.jsonl` in the kit | synthetic traces with planted fake PII | as long as the kit repo exists | anyone, the kit is public | not mine to delete; never copy it with real data |
+| the notebook runtime (Colab or local) | raw traces loaded in memory, raw text in cell outputs | one session | me | Colab: Runtime, Disconnect and delete runtime; clear outputs before sharing |
+| `stage-02/*.csv` in my GitHub repo | redacted messages, labels, trace ids | until the course ends, then 90 days | anyone, the repo is public | delete the files and rewrite history if anything raw slips in |
+| `stage-01/probe_runs.csv` | probe prompts and model answers, no user data | until the course ends | anyone, the repo is public | delete the file |
+| the model provider's logs | prompts and answers sent in Stage 1 | the provider's retention period | the provider | check the provider's terms; free tier data may be kept and used |
