@@ -418,6 +418,49 @@ def test_labels_out_writes_a_csv_to_label(tmp_path, monkeypatch):
     out = tmp_path / "to_label.csv"
     assert run_evals.main(["--split", "regression", "--labels-out", str(out)]) == 0
     rows = list(csv.DictReader(open(out)))
-    assert list(rows[0]) == ["id", "split", "question", "reference", "answer", "label"]
-    assert len(rows) == 4 and all(r["question"] and r["answer"] and r["label"] == "" for r in rows)
+    with open(ROOT / "evals" / "labels.csv") as f:
+        assert list(rows[0]) == next(csv.reader(f))  # the columns 08_judge_calibration reads
+    assert len(rows) == 4 and all(r["question"] and r["answer"] and r["human_label"] == r["note"] == "" for r in rows)
     assert "EVAL_BAR" in (ROOT / "prompts" / "APPROVALS.md").read_text()
+
+
+# ---------- round four ----------
+def test_09_notebooks_read_the_ci_questions(tmp_path, monkeypatch):
+    for name in ["09_rag_pipeline", "09_retrieval_eval", "09_permissions"]:
+        code = "\n".join(c.source for c in nbformat.read(NB / f"{name}.ipynb", as_version=4).cells
+                         if c.cell_type == "code")
+        assert 'ROOT / "evals" / "retrieval_questions.jsonl"' in code and 'CORPUS / "questions.jsonl"' in code, name
+    nb = run_nb("09_retrieval_eval.ipynb", tmp_path, monkeypatch)
+    assert "Labeled questions from: evals/retrieval_questions.jsonl" in outputs(nb)
+
+
+def test_redteam_notebook_defends_with_repo_code():
+    code = "\n".join(c.source for c in nbformat.read(NB / "13_injection_and_redteam.ipynb", as_version=4).cells
+                     if c.cell_type == "code")
+    assert "from app import tools as app_tools" in code and "app_tools.approval_gate(" in code
+    assert "app_tools.make_fetch_url(" in code and "HostAllowlist({" not in code and "def require_approval" not in code
+    assert "input_rules(task)" in code and "output_check(" in code
+    assert "kit/guardrails.py" in (ROOT / "stage-13" / "README.md").read_text()
+
+
+def test_approval_gate_and_fetch_factory(tmp_path):
+    from app import tools
+    held, out = [], tmp_path / "outbox.jsonl"
+    gate = tools.approval_gate("Draft an issue titled X", outbox=out, held_log=tmp_path / "held.jsonl",
+                               extra=lambda: {"run": "r1"}, on_held=held.append)
+    assert gate("X", "body")["saved"] and json.loads(out.read_text())["run"] == "r1"
+    assert gate("X", "body", to="attacker@evil.example")["denied"] and held[0]["to"] == "attacker@evil.example"
+    assert tools.approval_gate("How do I export?", outbox=out, held_log=tmp_path / "h.jsonl")("X", "b")["denied"]
+    seen = []
+    fetch = tools.make_fetch_url(log_path=tmp_path / "blocked.jsonl", on_fetch=seen.append)
+    assert fetch("https://evil.example/x")["blocked"] and fetch.allowlist.blocked and not seen
+    assert "PDF" in fetch("https://help.quillnote.example/qn-02")["text"] and len(seen) == 1
+
+
+def test_guarded_answer_always_has_cited():
+    from kit.guardrails import RateLimiter, guarded_answer
+    good = lambda q: {"text": "Choose Export [qn-02].", "cited": ["qn-02"], "call": None}  # noqa: E731
+    ok = lambda q: (True, "", None)  # noqa: E731
+    assert guarded_answer("pdf?", "u", good, ok, visibility={"qn-02": "public"})["cited"] == ["qn-02"]
+    assert guarded_answer("pdf?", "u", good, lambda q: (False, "x", None))["cited"] == []
+    assert guarded_answer("pdf?", "u", good, ok, limiter=RateLimiter(0, 60))["cited"] == []

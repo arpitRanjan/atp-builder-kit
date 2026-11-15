@@ -6,8 +6,8 @@ Options:  --split dev|held-out|regression    only that part of the golden set
                                              question, reference answer and the model's answer (for hand labels)
           --bar 0.85                         pass when at least this share of cases passes the hard gates
                                              (default: the EVAL_BAR environment variable, else 0.85, as in CI)
-          --labels-out PATH                  write a CSV of every case (id, split, question, reference, answer,
-                                             and an empty label column) to hand label for Stage 8
+          --labels-out PATH                  write a CSV of every case in the evals/labels.csv shape (id, split,
+                                             question, reference, answer, empty human_label and note) to label
           --check-prompts                    every prompt in prompts/ must name a passing eval run
                                              in prompts/APPROVALS.md (see stage-08/README.md)
 Exit code 1 when the pass rate is under the bar (a case fails on any hard gate, or on the judge with
@@ -36,7 +36,7 @@ RUNS = ROOT / "evals" / "runs"
 PROMPTS = ROOT / "prompts"
 SPLITS = ("dev", "held-out", "regression")
 DEFAULT_BAR = 0.85  # the same default as EVAL_BAR in .github/workflows/evals.yml.example and the Makefile
-LABEL_COLUMNS = ["id", "split", "question", "reference", "answer", "label"]
+LABEL_COLUMNS = ["id", "split", "question", "reference", "answer", "human_label", "note"]  # evals/labels.csv
 
 
 def default_bar():
@@ -137,7 +137,8 @@ def record(rows, bar=None):
 
 
 def write_labels(rec, path):
-    """The run's cases as a CSV to hand label: fill the label column (pass or fail) yourself."""
+    """The run's cases as a CSV in the evals/labels.csv shape that 08_judge_calibration reads.
+    Fill human_label (pass or fail) and a short note yourself, then add the rows to evals/labels.csv."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", newline="") as f:
@@ -145,7 +146,7 @@ def write_labels(rec, path):
         w.writeheader()
         for c in rec["cases_detail"]:
             w.writerow({"id": c["case"], "split": c["split"], "question": c["question"],
-                        "reference": c["reference"], "answer": c["answer"], "label": ""})
+                        "reference": c["reference"], "answer": c["answer"], "human_label": "", "note": ""})
     return path
 
 
@@ -213,7 +214,7 @@ def main(argv=None):
         (RUNS / f"{rec['run_id']}.json").write_text(json.dumps(rec, indent=1) + "\n")
         print(f"Saved evals/runs/{rec['run_id']}.json. Name it in prompts/APPROVALS.md to approve the prompt.")
     if args.labels_out:
-        print(f"Wrote {len(rows)} cases to {write_labels(rec, args.labels_out)}. Fill the label column by hand.")
+        print(f"Wrote {len(rows)} cases to {write_labels(rec, args.labels_out)}. Fill human_label and note by hand.")
     bad = not rec["passed"]
     if args.check_prompts:
         files, problems = check_prompts()

@@ -20,7 +20,8 @@ Submit: the GitHub link to your repo's `stage-09/` folder.
 ## In the eval suite and CI (outside stage-09/)
 
 - `evals/retrieval_questions.jsonl`: the labeled questions (25 in the kit; keep 20 or more, add your own).
-  Each has `page_ids` (the right pages) and `role` (who may read them).
+  Each has `page_ids` (the right pages) and `role` (who may read them). The three 09 notebooks and CI both
+  read this file, so a question you add here shows in both.
 - `evals/retrieval_check.py`: recall at k, citation faithfulness and the two-user leak test. It exits 1 below
   `--min-recall` or `--min-faithful`, or on any leak. `.github/workflows/evals.yml.example` runs it on every pull request.
   That CI step answers with the offline mock (`KIT_OFFLINE: "1"`), so free tier rate limits cannot fail it.

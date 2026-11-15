@@ -44,6 +44,18 @@ That gives the input check in parallel with generation, the output check, the re
 `app/tools.py` wraps `fetch_url` this way and logs blocked calls to `stage-13/blocked_calls.jsonl`. Point your
 README at it, and add your own hosts to `ALLOWED_HOSTS` there.
 
+## Where to fix the worst failure
+
+The notebook's defended setup is built from repo code, not from copies in the notebook. Fix it there, then rerun
+`notebooks/13_injection_and_redteam.ipynb`. The change shows in `stage-13/redteam-outcomes.csv`.
+
+- A tool did something it should not: change `app/tools.py` (`approval_gate`, `task_asks_for_issue`,
+  `draft_issue`, `ALLOWED_HOSTS`, `TEAM_DOMAIN`).
+- A bad request got through, or a bad answer was shown: add a rule to `INPUT_RULES` or `OUTPUT_RULES` in
+  `kit/guardrails.py` (used by `input_rules` and `output_check`).
+
+The "no defense" setup stays in the notebook on purpose. It is the baseline your fix is measured against.
+
 ## Your README must have
 
 A section called **Decisions and results** that says: what you shipped, what you measured, the false refusal

@@ -132,6 +132,7 @@ def guarded_answer(question, user, answer_fn, check_fn, role="public", visibilit
     check_fn(question) returns (ok, reason, call or None).
     Returns status (answered, refused_input, refused_output, rate_limited, spend_cap), the text shown,
     fallback (None when the answer was shown as is, else the status or the answer's own fallback),
+    cited (the answer's page ids, an empty list when refused),
     and latency_s, gen_latency_s and added_latency_s. Latencies use each call's reported latency_s,
     so they are also right for the mock, which reports a latency without waiting.
     """
@@ -140,11 +141,11 @@ def guarded_answer(question, user, answer_fn, check_fn, role="public", visibilit
     if limiter and not limiter.allow(user):
         return {"status": "rate_limited", "text": "You have sent a lot of questions in a short time. "
                 "Please wait a minute and try again.", "latency_s": 0.0, "gen_latency_s": 0.0,
-                "added_latency_s": 0.0, "cost_usd": 0.0, "fallback": "rate_limited"}
+                "added_latency_s": 0.0, "cost_usd": 0.0, "fallback": "rate_limited", "cited": []}
     if cap and not cap.allow(estimate_usd):
         return {"status": "spend_cap", "text": "The assistant is paused for today. The help pages are still "
                 f"open, and {SUPPORT} still answers.", "latency_s": 0.0, "gen_latency_s": 0.0,
-                "added_latency_s": 0.0, "cost_usd": 0.0, "fallback": "spend_cap"}
+                "added_latency_s": 0.0, "cost_usd": 0.0, "fallback": "spend_cap", "cited": []}
     start = time.perf_counter()
     with ThreadPoolExecutor(max_workers=2) as pool:
         gen_future = pool.submit(_timed, answer_fn, question)
