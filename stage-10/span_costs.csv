@@ -1,0 +1,4 @@
+name,spans,cost_usd,p50_ms,share_of_cost
+model_call,20,0.011485,643.0,1.0
+retrieval,20,0.0,0.8,0.0
+tool_call,3,0.0,0.1,0.0

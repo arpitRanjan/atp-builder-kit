@@ -1,0 +1,17 @@
+{
+ "requests": 20,
+ "successes": 19,
+ "p50_latency_ms": 643.9,
+ "p95_latency_ms": 970.8,
+ "p50_ttft_ms": 193.8,
+ "p95_ttft_ms": 292.05,
+ "ttft_kind": [
+  "simulated stream"
+ ],
+ "cost_total_usd": 0.011485000000000002,
+ "cost_per_request_usd": 0.0005742500000000001,
+ "cost_per_successful_task_usd": 0.0006044736842105265,
+ "top_spend_span": "model_call",
+ "top_spend_span_share": 1.0,
+ "provider": "mock"
+}

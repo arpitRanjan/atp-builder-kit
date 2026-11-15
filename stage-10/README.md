@@ -1,33 +1,21 @@
-# Stage 10: prove it paid off
+# Stage 10: did it pay off?
 
-Submit: the GitHub link to your repo's `stage-10/` folder.
+## Decision readout
 
-## Checklist: files in stage-10/
+- **What I measured.** 20 traced requests (`tracing_summary.json`): p50 latency 644 ms, p95 971 ms, time to
+  first token p50 194 ms, $0.000574 per request and $0.000604 per successful task (19 of 20 succeeded).
+  The `model_call` span drives all of the spend (`span_costs.csv`). One cost lever, a cascade on one shared
+  history, on the same 10 turn workload (`cost_lever.csv`): $0.002617 vs $0.005751 for the strong model on
+  every turn (54 percent less), but quality fell from 9/9 to 6/9.
+- **The threshold I set before the analysis** (`ab_threshold.json`, saved before the data was read):
+  SHIP only if the lower end of the 95 percent interval is above 0 and the lift is at least 1 point;
+  if the segment mix differs, use the segment adjusted lift and find out why before acting.
+- **The decision.** The rule says SHIP on the adjusted lift of +2.4 points (95 percent interval +0.2 to +4.6,
+  n = 2,000 per arm) (`ab_readout.md`). But the mix-shift check fired (the pooled lift was -4.0 points), so I am
+  holding the ship until the assignment is checked. I am also not shipping the cascade: it saves money but
+  fails 3 of 9 quality checks.
+- **Next step.** Find out why the platform mix differs between the arms (assignment or logging), then re-run
+  the readout on a clean split.
 
-| File | What it must show | Made by |
-| --- | --- | --- |
-| `10_tracing.ipynb` | 20 or more requests through the app, one trace each | your run of `notebooks/10_tracing.ipynb` |
-| `traces/spans.jsonl` | One JSON line per span (request, retrieval, model_call, tool_call) | `10_tracing` |
-| `tracing_summary.json` | p50 and p95 latency, time to first token, cost per request, cost per successful task, the span that drives the most spend | `10_tracing`, step 7 |
-| `span_costs.csv` | Spend by span name | `10_tracing`, step 7 |
-| `10_cost_levers.ipynb` | Prompt caching and a cascade on one shared history | your run of `notebooks/10_cost_levers.ipynb` |
-| `cost_lever.csv` | Baseline vs lever on the same 10 turn workload: request count, total cost, cost per request, the quality check | `10_cost_levers`, step 8 |
-| `metric-tree.md` | One north star, 3 to 5 inputs, 2 guardrails, built only from events your app logs. For every rate: the event, the denominator and the window | you, from `metric-tree-template.md` |
-| `10_ab_readout.ipynb` | The holdout readout | your run of `notebooks/10_ab_readout.ipynb` |
-| `ab_threshold.json` | The decision rule, written before the analysis (with its time) | `10_ab_readout`, step 2 |
-| `ab_readout.md` | Lift, 95 percent interval, n per arm, the mix-shift check, the decision against the threshold | `10_ab_readout`, step 7 |
-| `README.md` | The "Decision readout" section below | you |
-
-`python -m kit.tracing --requests 20 --out stage-10/traces/spans.jsonl` sends the same 20 traced requests
-without a notebook. (`make traces` writes to `traces/` at the repo root, which git ignores.)
-
-## README.md section (use this heading)
-
-`## Decision readout`, in a few lines:
-
-- What I measured in Stage 10
-- The A/B decision threshold I set before the analysis (from `ab_threshold.json`)
-- The main decision I made after the analysis
-- The single next step I would take
-
-Then link any code you changed outside `stage-10/` (tracing, logging, app changes) so a reviewer can find it.
+Metric tree: `metric-tree.md`. Code changed outside `stage-10/`: none; the spans come from `kit/tracing.py`
+around `app/app.py`'s answer function.

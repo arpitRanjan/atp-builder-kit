@@ -1,0 +1,5 @@
+{
+ "min_lift": 0.01,
+ "rule": "SHIP if the lower end of the 95 percent interval is above 0 and the lift is at least MIN_LIFT. STOP if the upper end is below MIN_LIFT. Otherwise KEEP RUNNING. If the segment mix differs between arms, use the segment adjusted lift, and find out why the mix differs before acting.",
+ "set_at": "2026-11-15T11:18:41+00:00"
+}
