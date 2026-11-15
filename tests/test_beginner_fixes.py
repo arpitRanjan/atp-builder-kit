@@ -58,9 +58,10 @@ def test_first_calls_put_the_help_pages_in_the_system_prompt(tmp_path, monkeypat
 def test_traces_notebook_says_where_probe_runs_came_from(tmp_path, monkeypatch):
     empty = tmp_path / "empty"
     empty.mkdir()
-    nb = run_nb("02_traces_pandas.ipynb", tmp_path / "out1", monkeypatch, KIT_STAGE1_DIR=empty)
-    text = outputs(nb)
-    assert "No Stage 1 probe_runs.csv found" in text and str(ROOT.parent) in text and str(ROOT / "stage-01") in text
+    if not (ROOT / "stage-01" / "probe_runs.csv").exists():  # a fork that has done Stage 1 always finds its own file
+        nb = run_nb("02_traces_pandas.ipynb", tmp_path / "out1", monkeypatch, KIT_STAGE1_DIR=empty)
+        text = outputs(nb)
+        assert "No Stage 1 probe_runs.csv found" in text and str(ROOT.parent) in text and str(ROOT / "stage-01") in text
 
     stage1 = tmp_path / "s1"
     stage1.mkdir()
@@ -90,11 +91,12 @@ def test_stage_folders_exist(folder):
 # 5. the shipped prompts/APPROVALS.md passes --check-prompts on a fresh fork
 def test_shipped_approvals_pass_and_only_for_the_kit_prompt(tmp_path):
     files, problems = run_evals.check_prompts()
-    assert [p.name for p in files] == ["help_v1.md"] and problems == []
+    assert "help_v1.md" in [p.name for p in files] and problems == []  # a fork may add help_v2.md with its own row
     assert "kit-baseline" in (ROOT / "prompts" / "APPROVALS.md").read_text()
     prompts = tmp_path / "prompts"
     prompts.mkdir()
-    (prompts / "APPROVALS.md").write_bytes((ROOT / "prompts" / "APPROVALS.md").read_bytes())
+    (prompts / "APPROVALS.md").write_text("| Prompt | Eval run | Date | Note |\n| --- | --- | --- | --- |\n"
+                                          "| help_v1.md | kit-baseline | 2026-11-15 | Kit baseline |\n")
     (prompts / "help_v1.md").write_text("A changed prompt.")
     problems = run_evals.check_prompts(prompts, tmp_path / "runs")[1]
     assert len(problems) == 1 and "kit-baseline" in problems[0] and "--save" in problems[0]
@@ -133,9 +135,9 @@ def test_workflow_template_is_passable_as_shipped(tmp_path):
     retrieval = next(s for n, s in steps.items() if "Stage 9" in n)
     assert retrieval["env"]["KIT_OFFLINE"] == "1"
     spanish = next(s for n, s in steps.items() if "Stage 12" in n)
-    assert not (ROOT / "stage-12" / "golden-set.jsonl").exists()  # a fresh fork has not done Stage 12
-    out = subprocess.run(["bash", "-e", "-c", spanish["run"]], cwd=ROOT, capture_output=True, text=True)
-    assert out.returncode == 0 and "Skipping the Spanish golden set" in out.stdout
+    if not (ROOT / "stage-12" / "golden-set.jsonl").exists():  # only a fork that has not done Stage 12 skips it
+        out = subprocess.run(["bash", "-e", "-c", spanish["run"]], cwd=ROOT, capture_output=True, text=True)
+        assert out.returncode == 0 and "Skipping the Spanish golden set" in out.stdout
     takehome = (ROOT / "templates" / "TAKEHOME.md").read_text()
     assert "17 of 20" in takehome and "--bar 0.85" in takehome and bar == 0.85
 
@@ -317,6 +319,7 @@ def test_kit_prompt_needs_no_approval_row(tmp_path):
 
 def test_answer_rag_returns_the_same_keys_as_answer(monkeypatch):
     from app import app
+    monkeypatch.setattr(app, "HIDE_VISIBILITY", [])  # this checks the role filter, not a fork's Stage 3 setting
     plain = app.answer("How do I export a note as PDF?")
     rag = app.answer_rag("How do I export a note as PDF?")
     assert set(rag) == set(plain) and rag["fallback"] is None and rag["call"]

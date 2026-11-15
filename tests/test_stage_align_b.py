@@ -89,6 +89,9 @@ def test_two_code_graders_and_an_advisory_judge(monkeypatch):
 
 def test_eval_run_record_and_prompt_approvals(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(run_evals, "RUNS", tmp_path / "runs")
+    from app import app  # the kit's help_v1.md, even on a fork that points PROMPT_FILE at help_v2.md
+    monkeypatch.setattr(app, "PROMPT_FILE", ROOT / "prompts" / "help_v1.md")
+    monkeypatch.setattr(app, "SYSTEM", (ROOT / "prompts" / "help_v1.md").read_text().strip())
     assert run_evals.main(["--split", "regression", "--save"]) == 0
     saved = list((tmp_path / "runs").glob("*.json"))
     rec = json.loads(saved[0].read_text())

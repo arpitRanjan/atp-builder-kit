@@ -106,10 +106,11 @@ def test_app_reads_the_versioned_prompt_file():
 
 def test_retest_writes_50_runs_and_the_fix_passes(tmp_path, monkeypatch):
     inputs = ROOT / "stage-03" / "evals" / "retest_inputs.example.jsonl"
+    from app import app
+    monkeypatch.setattr(app, "HIDE_VISIBILITY", [])  # "before" is the kit as shipped, even on a fork that did Stage 3
     retest.main(["--inputs", str(inputs), "--out-dir", str(tmp_path / "before")])
     before = rows(tmp_path / "before" / "retest_results.csv")
     assert len(before) == 50
-    from app import app
     monkeypatch.setattr(app, "HIDE_VISIBILITY", ["admin"])
     retest.main(["--inputs", str(inputs), "--out-dir", str(tmp_path / "after")])
     after = rows(tmp_path / "after" / "retest_results.csv")

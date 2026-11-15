@@ -47,5 +47,8 @@ def test_promptfoo_provider_offline():
 
 def test_workflow_template_is_disabled_in_the_kit():
     workflows = ROOT / ".github" / "workflows"
-    assert (workflows / "evals.yml.example").exists() and not (workflows / "evals.yml").exists()
+    assert (workflows / "evals.yml.example").exists()
+    # A fork turns it on at Stage 8 (and saves a run); so does an example branch (it has an EXAMPLE.md).
+    if not any(ROOT.glob("stage-*/EXAMPLE.md")) and not any((ROOT / "evals" / "runs").glob("*.json")):
+        assert not (workflows / "evals.yml").exists()
     assert "promptfooconfig.yaml" in (workflows / "evals.yml.example").read_text()
